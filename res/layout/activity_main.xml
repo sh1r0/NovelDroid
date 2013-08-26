@@ -8,7 +8,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity" >
     
-
 	<TextView 
         android:id="@+id/tv_url"
         android:text="@string/url"
@@ -21,9 +20,8 @@
         android:inputType="textUri"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/tv_url" >
-        <requestFocus />
-   	</EditText>
+        android:layout_below="@id/tv_url"
+   	/>
 
 	<Button android:id="@+id/btn_analyze"
 	    android:layout_width="wrap_content"
@@ -119,7 +117,7 @@
     
     <TextView
         android:id="@+id/tv_debug"
-        android:text="haha"
+        android:text=""
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="center"

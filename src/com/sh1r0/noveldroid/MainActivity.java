@@ -38,10 +38,8 @@ public class MainActivity extends Activity {
 		etToPage = (EditText) findViewById(R.id.et_to_page);
 		btnAnalyze = (Button) findViewById(R.id.btn_analyze);
 		tvDebug = (TextView) findViewById(R.id.tv_debug);
-		
-//		etURL.setText("http://ck101.com/thread-1517656-1-1.html");
-//		etURL.setText("http://ck101.com/thread-2806042-1-1.html");
-		etURL.setText("http://ck101.com/thread-2805147-1-1.html");
+
+		etURL.setText("http://ck101.com/thread-2806042-1-1.html");
 
 		btnAnalyze.setOnClickListener(new OnClickListener() {
 			@Override
@@ -49,48 +47,40 @@ public class MainActivity extends Activity {
 				Toast.makeText(getApplicationContext(), R.string.tooltip_analyze, Toast.LENGTH_SHORT).show();
 				String url = etURL.getText().toString();
 				tvDebug.setText(url);
-				
+
 				try {
 					novelInfo = Analysis.analysisUrl(url);
 				} catch (Exception e) {
-					Log.e("Error", e.getMessage());
+					String err = (e.getMessage() == null) ? "analysis fail" : e.getMessage();
+					Log.e("Error", err);
+					return;
 				}
-				
+
 				if (novelInfo == null || novelInfo.wrongUrl) {
 					Log.e("Error", "Wrong URL");
 					return;
 				}
-				
+
 				etAuthor.setText(novelInfo.author);
 				etNovelName.setText(novelInfo.name);
 				etFromPage.setText("1");
 				etToPage.setText(novelInfo.lastPage);
 
-//				HttpClient client = new DefaultHttpClient();
-//				HttpGet request = new HttpGet(url);
-//				String html = "";
-//				try {
-//					HttpResponse response = client.execute(request);
-//					html = EntityUtils.toString(response.getEntity());
-//					writeFileSdcardFile("test.html", html);
-//					Log.d("Debug", "Create folder success");
-//				} catch (Exception e) {
-//					Log.e("Error", e.getMessage());
-//					Log.e("Error", "Create folder fail");
-//				}
-				
 				Toast.makeText(getApplicationContext(), "Done!", Toast.LENGTH_SHORT).show();
 			}
 		});
 	}
-
-	/*
-	 * @Override public boolean onCreateOptionsMenu(Menu menu) {
-	 * getMenuInflater().inflate(R.menu.main, menu); return true; }
-	 */
+/*
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+*/
 	public void writeFileSdcardFile(String fileName, String write_str) throws IOException {
 		try {
-			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + fileName), "UTF8"));
+			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(Environment
+					.getExternalStorageDirectory().getAbsolutePath() + "/" + fileName), "UTF8"));
 			out.write(write_str);
 			out.close();
 		} catch (Exception e) {
