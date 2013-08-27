@@ -7,34 +7,42 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity" >
-    
-	<TextView 
-        android:id="@+id/tv_url"
-        android:text="@string/url"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-	/>
 	
-	<EditText
-        android:id="@+id/et_url"
-        android:inputType="textUri"
+	<LinearLayout 
+        android:id="@+id/id_info"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/tv_url"
-   	/>
-
-	<Button android:id="@+id/btn_analyze"
-	    android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/analyze"
-        android:layout_below="@id/et_url"
-    />
+        android:orientation="horizontal" >
+        
+	    <Spinner
+	        android:id="@+id/spn_doamin"
+	        android:layout_width="0dp"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="0.95"
+	    />
+	    
+	    <EditText
+	        android:id="@+id/et_id"
+	        android:inputType="number"
+	        android:hint="@string/id_hint"
+	        android:layout_width="0dp"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="1"
+	   	/>
+        
+	    <Button android:id="@+id/btn_analyze"
+		    android:text="@string/analyze"
+		    android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:textSize="15sp"
+	    />
+	</LinearLayout>
     
     <LinearLayout
         android:id="@+id/novel_name_info"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/btn_analyze"
+        android:layout_below="@id/id_info"
         android:orientation="horizontal" >
 
 	    <TextView 
@@ -70,6 +78,7 @@
 	    <EditText
             android:id="@+id/et_author"
             android:inputType="text"
+            	        android:hint="@string/author_hint"
 	        android:layout_width="0dp"
 			android:layout_weight="1"
 	        android:layout_height="wrap_content"
@@ -117,11 +126,22 @@
     
     <TextView
         android:id="@+id/tv_debug"
-        android:text=""
+        android:text="."
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:layout_alignParentBottom="true"
+	/>
+
+    <Button
+        android:id="@+id/btn_download"
+        android:enabled="false"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/page_info"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:text="@string/download"
 	/>
 
 </RelativeLayout>

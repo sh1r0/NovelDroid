@@ -13,12 +13,13 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 public class Analysis {
-	public static NovelInfo analysisUrl(String urlString) throws Exception {
+	public static NovelInfo analysisUrl(String tid) throws Exception {
 		NovelInfo result = new NovelInfo();
-		Log.d("Debug", urlString);
-		result.urlString = urlString;
-		result.lastPage = "1";
-
+		Log.d("Debug", tid);
+		result.domain = "ck101.com";
+		result.tid = tid;
+		result.lastPage = 1;
+/*
 		// http://ck101.com/thread-<tid>-<page>-1.html
 		String regex = "^http://\\w*.*ck101.com/thread-(\\d+)-(\\d+)-\\w+.html";
 		Pattern p = Pattern.compile(regex);
@@ -32,7 +33,7 @@ public class Analysis {
 			result.wrongUrl = true;
 			return result;
 		}
-		
+*/		
 		AsyncTask<NovelInfo, String, NovelInfo> request = new RequestTask();
 		request.execute(result);
 		result = request.get();
@@ -52,13 +53,14 @@ class RequestTask extends AsyncTask<NovelInfo, String, NovelInfo> {
         	URL url = new URL("http://ck101.com/thread-"+result.tid+"-1-1.html");
     		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     		connection.setDoOutput(true);
-    		connection.setRequestProperty("User-Agent", "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0)"); connection.connect();
+    		connection.setRequestProperty("User-Agent", "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0)");
+    		connection.connect();
     		InputStream inStream = (InputStream) connection.getInputStream();
     		BufferedReader reader = new BufferedReader(new InputStreamReader(inStream, "utf8"));
     		
     		String line = "";
     		String regex = "";
-    		Matcher macher;
+    		Matcher matcher;
     		Pattern p;
     		while (!(infoFound && pageFound) && (line = reader.readLine()) != null) {
     			int start;
@@ -67,12 +69,12 @@ class RequestTask extends AsyncTask<NovelInfo, String, NovelInfo> {
     				int end = line.indexOf("</title>");
     				line = line.substring(start, end);
 
-    				regex = "([\\[【「].+[\\]】」])?\\s*(\\S+).*作者[】:： ]*([\\S&&[^(（《﹝]]+)";
+    				regex = "([\\[【「].+[\\]】」])?\\s*[【《]?([\\S&&[^】》]]+).*作者[】:：︰ ]*([\\S&&[^(（《﹝【]]+)";
     				p = Pattern.compile(regex);
-    				macher = p.matcher(line);
-    				if (macher.find()) {
-    					result.name = macher.group(2);
-    					result.author = macher.group(3);
+    				matcher = p.matcher(line);
+    				if (matcher.find()) {
+    					result.name = matcher.group(2);
+    					result.author = matcher.group(3);
     					infoFound = true;
     				}
     			}
@@ -80,11 +82,11 @@ class RequestTask extends AsyncTask<NovelInfo, String, NovelInfo> {
     				// "<a href=\"thread-<tid>-<page>-1.html\" class=\"last\">";
     				regex = "<a href=\"thread-\\d+-(\\d+)-\\w+.html\"";
     				p = Pattern.compile(regex);
-    				macher = p.matcher(line);
-    				String tempPage = "1"; // get the second last page link
-    				while (macher.find()) {
+    				matcher = p.matcher(line);
+    				int tempPage = 1; // get the second last page link
+    				while (matcher.find()) {
     					result.lastPage = tempPage;
-    					tempPage = macher.group(1);
+    					tempPage = Integer.parseInt(matcher.group(1));
     				}
     				pageFound = true;
     			}
@@ -95,9 +97,10 @@ class RequestTask extends AsyncTask<NovelInfo, String, NovelInfo> {
         }
         return result;
     }
-
+/*
     @Override
     protected void onPostExecute(NovelInfo result) {
         super.onPostExecute(result);
     }
+*/
 }
