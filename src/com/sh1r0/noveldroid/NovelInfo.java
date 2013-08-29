@@ -1,7 +1,7 @@
 package com.sh1r0.noveldroid;
 
 public class NovelInfo {
-	public String domain;
+	public int domainID;
 	public String tid;
 	public int fromPage;
 	public int toPage;

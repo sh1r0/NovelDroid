@@ -126,7 +126,6 @@
     
     <TextView
         android:id="@+id/tv_debug"
-        android:text="."
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -143,5 +142,16 @@
         android:layout_marginTop="50dp"
         android:text="@string/download"
 	/>
+    
+    <ProgressBar  
+	    android:id="@+id/progressbar"   
+	    android:layout_width="fill_parent"   
+	    android:layout_height="wrap_content"  
+	    style="?android:attr/progressBarStyleHorizontal"  
+	    android:max="100"
+	    android:layout_marginTop="50dp"
+	    android:layout_below="@id/btn_download"
+	    android:visibility="gone"
+    />
 
 </RelativeLayout>

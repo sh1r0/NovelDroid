@@ -8,20 +8,23 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import android.os.Handler;
 import android.util.Log;
 
 public class DownloadThread extends Thread {
 
 	private String[] srcUrlStrings;
 	private String[] dstFilePaths;
+	private int threadID;
+	private Handler progressHandler;
 	public boolean downloadstate;
-	private int threadNember;
 
-	public DownloadThread(String[] src, String[] dst, int t) {
+	public DownloadThread(String[] src, String[] dst, int t, Handler progressHandler) {
 		this.srcUrlStrings = src;
 		this.dstFilePaths = dst;
-		this.threadNember = t;
+		this.threadID = t;
 		downloadstate = true;
+		this.progressHandler = progressHandler;
 	}
 
 	public void run() {
@@ -34,7 +37,7 @@ public class DownloadThread extends Thread {
 				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
 				connection.setDoOutput(true);
-				switch (threadNember) {
+				switch (threadID) {
 				case 0:
 					connection
 							.setRequestProperty(
@@ -85,6 +88,7 @@ public class DownloadThread extends Thread {
 				writer.flush();
 				writer.close();
 				Log.d("Debug", "下載完成: " + dstFilePaths[n]);
+				progressHandler.sendEmptyMessage(0);
 			} catch (Exception e) {
 				downloadstate = false;
 				return;
