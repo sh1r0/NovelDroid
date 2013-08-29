@@ -5,16 +5,19 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
+import android.os.AsyncTask;
 import android.util.Log;
 
 public class BookWriter {
 	private String[][] fileName;
+	private int domainID;
 	public String bookName;
 	public String author;
 	private OutputStreamWriter writer;
 
 	public BookWriter(NovelInfo novelInfo) {
 		fileName = new String[Settings.threadNum][];
+		this.domainID = novelInfo.domainID;
 		this.bookName = novelInfo.name;
 		this.author = novelInfo.author;
 	}
@@ -22,10 +25,6 @@ public class BookWriter {
 	public void makeBook() throws IOException {
 		writer = new OutputStreamWriter(new FileOutputStream(Settings.appDir + bookName + ".txt"), "UTF-8");
 /*
-		writer.write("書名：" + bookName + "\r\n");
-		if (!author.isEmpty())
-			writer.write("作者：" + author + "\r\n");
-*/
 		ContentParserThread[] parserThreads = new ContentParserThread[Settings.threadNum];
 		for (int n = 0; n < Settings.threadNum; n++) {
 			parserThreads[n] = new ContentParserThread(fileName[n]);
@@ -43,7 +42,22 @@ public class BookWriter {
 		for (int n = 0; n < Settings.threadNum; n++) {
 			writer.write(parserThreads[n].getResult());
 		}
-		
+*/
+	
+		if (domainID == Site.CK101) {
+			AsyncTask<String, Integer, String>[] contentParsers = new Ck101Parser[Settings.threadNum];
+			for (int i = 0; i < Settings.threadNum; i++) {
+				contentParsers[i] = new Ck101Parser();
+				contentParsers[i].execute(fileName[i]);
+			}
+			try {
+				for (int i = 0; i < Settings.threadNum; i++) {
+					writer.write(contentParsers[i].get());
+				}
+			} catch (Exception e) {
+			}
+		}
+
 		writer.flush();
 		writer.close();
 		

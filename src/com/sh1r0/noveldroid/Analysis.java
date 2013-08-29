@@ -20,8 +20,8 @@ public class Analysis {
 		result.tid = tid;
 		result.lastPage = 1;
 		
-		AsyncTask<NovelInfo, String, NovelInfo> request;
-		request = (domainID == 0) ? new Ck101Task() : new EynyTask();
+		AsyncTask<NovelInfo, Integer, NovelInfo> request;
+		request = (domainID == 0) ? new Ck101Analyzer() : new EynyAnalyzer();
 		request.execute(result);
 		result = request.get();
 
@@ -29,7 +29,7 @@ public class Analysis {
 	}
 }
 
-class Ck101Task extends AsyncTask<NovelInfo, String, NovelInfo> {
+class Ck101Analyzer extends AsyncTask<NovelInfo, Integer, NovelInfo> {
     @Override
     protected NovelInfo doInBackground(NovelInfo... infos) {
     	NovelInfo result = infos[0];
@@ -84,14 +84,14 @@ class Ck101Task extends AsyncTask<NovelInfo, String, NovelInfo> {
     		}
     		reader.close();
         } catch (IOException e) {
-            e.printStackTrace();
+        	e.printStackTrace();
         }
         return result;
     }
 }
 
 
-class EynyTask extends AsyncTask<NovelInfo, String, NovelInfo> {
+class EynyAnalyzer extends AsyncTask<NovelInfo, Integer, NovelInfo> {
     @Override
     protected NovelInfo doInBackground(NovelInfo... infos) {
     	NovelInfo result = infos[0];
