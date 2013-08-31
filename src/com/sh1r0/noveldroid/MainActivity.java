@@ -62,8 +62,6 @@ public class MainActivity extends Activity {
 		spnDomain = (Spinner) findViewById(R.id.spn_doamin);
 		pbDownload = (ProgressBar) findViewById(R.id.progressbar);
 
-		etID.setText("2800598"); // debug use only
-
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, Site.domainList);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spnDomain.setAdapter(adapter);
@@ -189,6 +187,12 @@ public class MainActivity extends Activity {
 				}).start();
 			}
 		});
+		
+		// debug use only
+//		etID.setText("7475179");
+//		spnDomain.setSelection(Site.EYNY);
+		etID.setText("2800598");
+		spnDomain.setSelection(Site.CK101);
 	}
 
 	@SuppressLint("HandlerLeak")

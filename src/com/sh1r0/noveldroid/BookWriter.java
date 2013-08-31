@@ -23,31 +23,24 @@ public class BookWriter {
 	}
 
 	public void makeBook() throws IOException {
-		writer = new OutputStreamWriter(new FileOutputStream(Settings.appDir + bookName + ".txt"), "UTF-8");
-/*
-		ContentParserThread[] parserThreads = new ContentParserThread[Settings.threadNum];
-		for (int n = 0; n < Settings.threadNum; n++) {
-			parserThreads[n] = new ContentParserThread(fileName[n]);
-			parserThreads[n].start();
-		}
-		
-		// wait for termination of all thread
-		try {
-			for (int n = 0; n < Settings.threadNum; n++) {
-				parserThreads[n].join();
-			}
-		} catch (InterruptedException e) {
-		}
-		
-		for (int n = 0; n < Settings.threadNum; n++) {
-			writer.write(parserThreads[n].getResult());
-		}
-*/
-	
+		writer = new OutputStreamWriter(new FileOutputStream(Settings.appDir + bookName + ".txt"), "UTF-16LE");
+
 		if (domainID == Site.CK101) {
 			AsyncTask<String, Integer, String>[] contentParsers = new Ck101Parser[Settings.threadNum];
 			for (int i = 0; i < Settings.threadNum; i++) {
 				contentParsers[i] = new Ck101Parser();
+				contentParsers[i].execute(fileName[i]);
+			}
+			try {
+				for (int i = 0; i < Settings.threadNum; i++) {
+					writer.write(contentParsers[i].get());
+				}
+			} catch (Exception e) {
+			}
+		} else if (domainID == Site.EYNY) {
+			AsyncTask<String, Integer, String>[] contentParsers = new EynyParser[Settings.threadNum];
+			for (int i = 0; i < Settings.threadNum; i++) {
+				contentParsers[i] = new EynyParser();
 				contentParsers[i].execute(fileName[i]);
 			}
 			try {

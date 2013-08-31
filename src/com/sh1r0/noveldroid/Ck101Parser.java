@@ -13,7 +13,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 public class Ck101Parser extends AsyncTask<String, Integer, String> {	
-	
 	@Override
 	protected String doInBackground(String... htmls) {
 		StringBuilder bookData = new StringBuilder();
@@ -29,8 +28,9 @@ public class Ck101Parser extends AsyncTask<String, Integer, String> {
 		 * 2: 在<div class="mes">中
 		 * 3: <div id="postmessage_~~~~" class="mes">中
 		 */
-		int stage = 0;
+		int stage;
 		for (int n = 0; n < htmls.length; n++) {
+			stage = 0;
 			try {
 				reader = new BufferedReader(new InputStreamReader(new FileInputStream(htmls[n]), "UTF-8"));
 			} catch (UnsupportedEncodingException e1) {
@@ -61,7 +61,7 @@ public class Ck101Parser extends AsyncTask<String, Integer, String> {
 						}
 						break;
 					case 2:
-						if (line.indexOf("class=\"postmessage\">") >= 0) { 
+						if (line.indexOf("class=\"postmessage\">") >= 0) {
 							stage = 3;
 							if (line.indexOf("<i class=\"pstatus\">") >= 0) { // filter out modified time
 								line = line.replaceAll("<i class=\"pstatus\">[^<>]+ </i>", "");
@@ -76,6 +76,7 @@ public class Ck101Parser extends AsyncTask<String, Integer, String> {
 							line = Replace.replace(line, "&nbsp;", "");
 							m_html = p_html.matcher(line);
 							line = m_html.replaceAll("");
+							line = line.replaceAll("^[ \t]+", "");
 							bookData.append(line);
 						}
 						break;
@@ -86,18 +87,18 @@ public class Ck101Parser extends AsyncTask<String, Integer, String> {
 							if (otherTable > 0)// 從底層離開
 								otherTable--;
 							else { // 偵測是否離開了
-								line = line.replace("</div>", "");
+								line = line.replace("</div>", " ");
 								stage = 0;
 								line += "\r\n";
 							}
 						}
 						if (otherTable == 0) {
-							// 去掉<strong>//|<[/]?strong>|<[/]?b>|<[/]?a[^>]*>)
+							line = Replace.replace(line, "&nbsp;", "");
 							line = Replace.replace(line, "<br/>", "\r\n");
 							line = Replace.replace(line, "<br />", "\r\n");
-							line = Replace.replace(line, "&nbsp;", "");
 							m_html = p_html.matcher(line);
 							line = m_html.replaceAll("");
+							line = line.replaceFirst(" 本帖最後由 \\S+ 於 \\d{4}-\\d{1,2}-\\d{1,2} \\d{2}:\\d{2} (\\S{2} )?編輯 ", "");
 							bookData.append(line);
 						}
 						break;
