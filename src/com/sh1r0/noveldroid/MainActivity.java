@@ -47,6 +47,7 @@ public class MainActivity extends Activity {
 	private ProgressBar pbDownload;
 	private NovelInfo novelInfo;
 	private ProgressDialog progressDialog;
+	private String filename;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -183,11 +184,15 @@ public class MainActivity extends Activity {
 						BookWriter bookWriter = new BookWriter(novelInfo);
 						try {
 							if (!downloader.startDownload(bookWriter, progressHandler)) {
-								mHandler.sendEmptyMessage(FAIL);
+								throw new IOException();
 							} else {
 								mHandler.sendEmptyMessage(PREPARING);
-								bookWriter.makeBook();
-								mHandler.sendEmptyMessage(SUCCESS);
+								filename = bookWriter.makeBook();
+								if (filename == null) {
+									throw new IOException();
+								} else {
+									mHandler.sendEmptyMessage(SUCCESS);
+								}
 							}
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -213,7 +218,7 @@ public class MainActivity extends Activity {
 			case SUCCESS:
 				progressDialog.dismiss();
 				Toast.makeText(getApplicationContext(), "Novel Download Success!!", Toast.LENGTH_LONG).show();
-				tvDebug.setText("Novel is saved");
+				tvDebug.setText(filename + " is saved");
 				break;
 			case PREPARING:
 				pbDownload.setVisibility(View.GONE);

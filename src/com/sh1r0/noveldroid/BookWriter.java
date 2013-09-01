@@ -22,8 +22,9 @@ public class BookWriter {
 		this.author = novelInfo.author;
 	}
 
-	public void makeBook() throws IOException {
-		writer = new OutputStreamWriter(new FileOutputStream(Settings.appDir + bookName + ".txt"), "UTF-16LE");
+	public String makeBook() throws IOException {
+		String filename = bookName + ".txt";
+		writer = new OutputStreamWriter(new FileOutputStream(Settings.appDir + filename), "UTF-16LE");
 
 		if (domainID == Site.CK101) {
 			AsyncTask<String, Integer, String>[] contentParsers = new Ck101Parser[Settings.threadNum];
@@ -36,6 +37,7 @@ public class BookWriter {
 					writer.write(contentParsers[i].get());
 				}
 			} catch (Exception e) {
+				return null;
 			}
 		} else if (domainID == Site.EYNY) {
 			AsyncTask<String, Integer, String>[] contentParsers = new EynyParser[Settings.threadNum];
@@ -48,6 +50,7 @@ public class BookWriter {
 					writer.write(contentParsers[i].get());
 				}
 			} catch (Exception e) {
+				return null;
 			}
 		}
 
@@ -56,6 +59,8 @@ public class BookWriter {
 		
 		Log.d("Debug", "小說製作完成");
 		delTempFile();
+		
+		return filename;
 	}
 
 	public void addFileName(int threadID, String[] temp) {
