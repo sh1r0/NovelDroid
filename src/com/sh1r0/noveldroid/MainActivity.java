@@ -19,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -62,7 +63,8 @@ public class MainActivity extends Activity {
 		spnDomain = (Spinner) findViewById(R.id.spn_doamin);
 		pbDownload = (ProgressBar) findViewById(R.id.progressbar);
 
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, Site.domainList);
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item,
+				Site.domainList);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spnDomain.setAdapter(adapter);
 		spnDomain.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
@@ -80,20 +82,20 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				tvDebug.setText("");
-				
+
 				if (!isNetworkConnected()) {
 					Toast.makeText(getApplicationContext(), "No Network Connection", Toast.LENGTH_SHORT).show();
 					btnDownload.setEnabled(false);
 					return;
 				}
-				
+
 				String tid = etID.getText().toString();
 				if (tid.isEmpty()) {
 					Toast.makeText(getApplicationContext(), "Novel ID cannot be blank", Toast.LENGTH_SHORT).show();
 					btnDownload.setEnabled(false);
 					return;
 				}
-				
+
 				try {
 					novelInfo = Analysis.analysisUrl(spnDomain.getSelectedItemPosition(), tid);
 				} catch (Exception e) {
@@ -122,6 +124,10 @@ public class MainActivity extends Activity {
 		btnDownload.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+				inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
+						InputMethodManager.HIDE_NOT_ALWAYS);
+
 				novelInfo.name = etNovelName.getText().toString();
 				novelInfo.author = etAuthor.getText().toString();
 				novelInfo.fromPage = Integer.parseInt(etFromPage.getText().toString());
@@ -141,7 +147,7 @@ public class MainActivity extends Activity {
 					dialog.show();
 					return;
 				}
-				
+
 				if (novelInfo.fromPage < 1 || novelInfo.fromPage > novelInfo.toPage
 						|| novelInfo.toPage > novelInfo.lastPage) {
 					AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
@@ -157,12 +163,12 @@ public class MainActivity extends Activity {
 					dialog.show();
 					return;
 				}
-				
+
 				File tempDir = new File(Settings.tempDir);
 				if (!tempDir.exists()) {
 					tempDir.mkdirs();
 				}
-				
+
 				pbDownload.setProgress(0);
 				pbDownload.setVisibility(View.VISIBLE);
 				tvDebug.setText("Downloading...");
@@ -187,10 +193,10 @@ public class MainActivity extends Activity {
 				}).start();
 			}
 		});
-		
+
 		// debug use only
-//		etID.setText("7475179");
-//		spnDomain.setSelection(Site.EYNY);
+		// etID.setText("7475179");
+		// spnDomain.setSelection(Site.EYNY);
 		etID.setText("2800598");
 		spnDomain.setSelection(Site.CK101);
 	}
@@ -212,16 +218,16 @@ public class MainActivity extends Activity {
 				Toast.makeText(getApplicationContext(), "Novel Download Fail :(", Toast.LENGTH_SHORT).show();
 				tvDebug.setText("Download failed");
 				break;
-			
+
 			}
 		}
 	};
-	
+
 	@SuppressLint("HandlerLeak")
 	public Handler progressHandler = new Handler() {
 		int completeTaskNum;
 		int totalTaskNum;
-		
+
 		@Override
 		public void handleMessage(Message msg) {
 			if (msg.what == 0x10000) {
@@ -229,7 +235,7 @@ public class MainActivity extends Activity {
 				totalTaskNum = msg.arg1;
 				return;
 			}
-			
+
 			completeTaskNum++;
 			pbDownload.setProgress((int) completeTaskNum * 100 / totalTaskNum);
 			if (completeTaskNum == totalTaskNum) {
@@ -243,7 +249,7 @@ public class MainActivity extends Activity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
-	
+
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_about:
