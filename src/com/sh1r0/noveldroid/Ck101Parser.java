@@ -99,6 +99,9 @@ public class Ck101Parser extends AsyncTask<String, Integer, String> {
 							m_html = p_html.matcher(line);
 							line = m_html.replaceAll("");
 							line = line.replaceFirst(" 本帖最後由 \\S+ 於 \\d{4}-\\d{1,2}-\\d{1,2} \\d{2}:\\d{2} (\\S{2} )?編輯 ", "");
+							line = line.replaceAll("^[ \t　]+", "");
+							if (line.length() > 2)
+								line = "　　" + line;
 							bookData.append(line);
 						}
 						break;

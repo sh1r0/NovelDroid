@@ -18,8 +18,9 @@ public class EynyParser extends AsyncTask<String, Integer, String> {
 		StringBuilder bookData = new StringBuilder();
 		BufferedReader reader = null;
 		String line;
-		Pattern p_html = Pattern.compile("<[^>]+>", Pattern.CASE_INSENSITIVE);
-		Pattern p_title = Pattern.compile("<h3>(.+)?</h3>");
+		Pattern pHtmlTag = Pattern.compile("<[^>]+>", Pattern.CASE_INSENSITIVE);
+		Pattern pTitle = Pattern.compile("<h3>(.+)?</h3>");
+		Pattern pModStamp = Pattern.compile(" 本帖最後由 \\S+ 於 \\d{4}-\\d{1,2}-\\d{1,2} \\d{2}:\\d{2} (\\S{2} )?編輯 ");
 		Matcher matcher;
 		
 		/**
@@ -55,7 +56,7 @@ public class EynyParser extends AsyncTask<String, Integer, String> {
 						}
 						break;
 					case 2:
-						matcher = p_title.matcher(line);
+						matcher = pTitle.matcher(line);
 						if (matcher.find()) {
 							if ((line = matcher.group(1)) != null)
 								bookData.append(line + "\r\n");
@@ -63,6 +64,9 @@ public class EynyParser extends AsyncTask<String, Integer, String> {
 						}
 						break;
 					case 3:
+						matcher = pModStamp.matcher(line);
+						if (matcher.find())
+							break;
 						if (line.indexOf("<p class=\"author\">") >= 0) {
 							stage = 1;
 							break;
@@ -78,9 +82,11 @@ public class EynyParser extends AsyncTask<String, Integer, String> {
 						line = Replace.replace(line, "&nbsp;", "");
 						line = Replace.replace(line, "<br/>", "\r\n");
 						line = Replace.replace(line, "<br />", "\r\n");
-						matcher = p_html.matcher(line);
+						matcher = pHtmlTag.matcher(line);
 						line = matcher.replaceAll("");
-						line = line.replaceAll("^[ \t]+", "");
+						line = line.replaceAll("^[ \t　]+", "");
+						if (line.length() > 2)
+							line = "　　" + line;
 						bookData.append(line);
 						break;
 					default:
