@@ -42,6 +42,7 @@ public class MainActivity extends Activity {
 	private Button btnAnalyze;
 	private Button btnDownload;
 	private TextView tvDebug;
+	private TextView tvDownloadStatus;
 	private Spinner spnDomain;
 	private ProgressBar pbDownload;
 	private NovelInfo novelInfo;
@@ -60,6 +61,7 @@ public class MainActivity extends Activity {
 		btnAnalyze = (Button) findViewById(R.id.btn_analyze);
 		btnDownload = (Button) findViewById(R.id.btn_download);
 		tvDebug = (TextView) findViewById(R.id.tv_debug);
+		tvDownloadStatus = (TextView) findViewById(R.id.tv_dl_status);
 		spnDomain = (Spinner) findViewById(R.id.spn_doamin);
 		pbDownload = (ProgressBar) findViewById(R.id.progressbar);
 
@@ -171,6 +173,7 @@ public class MainActivity extends Activity {
 
 				pbDownload.setProgress(0);
 				pbDownload.setVisibility(View.VISIBLE);
+				tvDownloadStatus.setVisibility(View.VISIBLE);
 				tvDebug.setText("Downloading...");
 
 				new Thread(new Runnable() {
@@ -188,6 +191,7 @@ public class MainActivity extends Activity {
 							}
 						} catch (IOException e) {
 							e.printStackTrace();
+							mHandler.sendEmptyMessage(FAIL);
 						}
 					}
 				}).start();
@@ -212,6 +216,8 @@ public class MainActivity extends Activity {
 				tvDebug.setText("Novel is saved");
 				break;
 			case PREPARING:
+				pbDownload.setVisibility(View.GONE);
+				tvDownloadStatus.setVisibility(View.GONE);
 				progressDialog = ProgressDialog.show(MainActivity.this, "Wait", "Processing...");
 				break;
 			case FAIL:
@@ -233,14 +239,13 @@ public class MainActivity extends Activity {
 			if (msg.what == 0x10000) {
 				completeTaskNum = 0;
 				totalTaskNum = msg.arg1;
+				tvDownloadStatus.setText(0 + "/" + totalTaskNum);
 				return;
 			}
 
 			completeTaskNum++;
+			tvDownloadStatus.setText(completeTaskNum + "/" + totalTaskNum);
 			pbDownload.setProgress((int) completeTaskNum * 100 / totalTaskNum);
-			if (completeTaskNum == totalTaskNum) {
-				pbDownload.setVisibility(View.GONE);
-			}
 		}
 	};
 
