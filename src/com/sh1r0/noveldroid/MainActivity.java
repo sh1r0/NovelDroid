@@ -85,31 +85,29 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				tvDebug.setText("");
+				btnDownload.setEnabled(false);
+				closeKeypad();
 
 				if (!isNetworkConnected()) {
 					Toast.makeText(getApplicationContext(), "No Network Connection", Toast.LENGTH_SHORT).show();
-					btnDownload.setEnabled(false);
 					return;
 				}
 
 				String tid = etID.getText().toString();
 				if (tid.isEmpty()) {
 					Toast.makeText(getApplicationContext(), "Novel ID cannot be blank", Toast.LENGTH_SHORT).show();
-					btnDownload.setEnabled(false);
 					return;
 				}
 
 				try {
 					novelInfo = Analysis.analysisUrl(spnDomain.getSelectedItemPosition(), tid);
 				} catch (Exception e) {
-					btnDownload.setEnabled(false);
 					String err = (e.getMessage() == null) ? "analysis fail" : e.getMessage();
 					Log.e("Error", err);
 					return;
 				}
 
 				if (novelInfo == null || novelInfo.wrongUrl) {
-					btnDownload.setEnabled(false);
 					Log.e("Error", "Wrong URL");
 					return;
 				}
@@ -127,10 +125,7 @@ public class MainActivity extends Activity {
 		btnDownload.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-				inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-						InputMethodManager.HIDE_NOT_ALWAYS);
-
+				closeKeypad();
 				novelInfo.name = etNovelName.getText().toString();
 				novelInfo.author = etAuthor.getText().toString();
 				novelInfo.fromPage = Integer.parseInt(etFromPage.getText().toString());
@@ -204,8 +199,6 @@ public class MainActivity extends Activity {
 		});
 
 		// debug use only
-		// etID.setText("7475179");
-		// spnDomain.setSelection(Site.EYNY);
 		etID.setText("2800598");
 		spnDomain.setSelection(Site.CK101);
 	}
@@ -229,7 +222,6 @@ public class MainActivity extends Activity {
 				Toast.makeText(getApplicationContext(), "Novel Download Fail :(", Toast.LENGTH_SHORT).show();
 				tvDebug.setText("Download failed");
 				break;
-
 			}
 		}
 	};
@@ -288,5 +280,10 @@ public class MainActivity extends Activity {
 		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo activeNetworkInfo = cm.getActiveNetworkInfo();
 		return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+	}
+
+	private void closeKeypad() {
+		InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+		inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 	}
 }

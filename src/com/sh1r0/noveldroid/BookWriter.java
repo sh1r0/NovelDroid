@@ -30,7 +30,7 @@ public class BookWriter {
 			AsyncTask<String, Integer, String>[] contentParsers = new Ck101Parser[Settings.threadNum];
 			for (int i = 0; i < Settings.threadNum; i++) {
 				contentParsers[i] = new Ck101Parser();
-				contentParsers[i].execute(fileName[i]);
+				contentParsers[i].executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, fileName[i]);
 			}
 			try {
 				for (int i = 0; i < Settings.threadNum; i++) {
@@ -43,7 +43,7 @@ public class BookWriter {
 			AsyncTask<String, Integer, String>[] contentParsers = new EynyParser[Settings.threadNum];
 			for (int i = 0; i < Settings.threadNum; i++) {
 				contentParsers[i] = new EynyParser();
-				contentParsers[i].execute(fileName[i]);
+				contentParsers[i].executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, fileName[i]);
 			}
 			try {
 				for (int i = 0; i < Settings.threadNum; i++) {
