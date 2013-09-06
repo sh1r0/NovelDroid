@@ -41,7 +41,7 @@ public class MainActivity extends Activity {
 	private EditText etToPage;
 	private Button btnAnalyze;
 	private Button btnDownload;
-	private TextView tvDebug;
+	private TextView tvStatus;
 	private TextView tvDownloadStatus;
 	private Spinner spnDomain;
 	private ProgressBar pbDownload;
@@ -61,7 +61,7 @@ public class MainActivity extends Activity {
 		etToPage = (EditText) findViewById(R.id.et_to_page);
 		btnAnalyze = (Button) findViewById(R.id.btn_analyze);
 		btnDownload = (Button) findViewById(R.id.btn_download);
-		tvDebug = (TextView) findViewById(R.id.tv_debug);
+		tvStatus = (TextView) findViewById(R.id.tv_status);
 		tvDownloadStatus = (TextView) findViewById(R.id.tv_dl_status);
 		spnDomain = (Spinner) findViewById(R.id.spn_doamin);
 		pbDownload = (ProgressBar) findViewById(R.id.progressbar);
@@ -76,26 +76,25 @@ public class MainActivity extends Activity {
 			}
 
 			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {
-				Toast.makeText(getApplicationContext(), "Nothing", Toast.LENGTH_SHORT).show();
+			public void onNothingSelected(AdapterView<?> adapterView) {
 			}
 		});
 
 		btnAnalyze.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				tvDebug.setText("");
+				tvStatus.setText("");
 				btnDownload.setEnabled(false);
 				closeKeypad();
 
 				if (!isNetworkConnected()) {
-					Toast.makeText(getApplicationContext(), "No Network Connection", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getApplicationContext(), R.string.no_connection_tooltip, Toast.LENGTH_SHORT).show();
 					return;
 				}
 
 				String tid = etID.getText().toString();
 				if (tid.isEmpty()) {
-					Toast.makeText(getApplicationContext(), "Novel ID cannot be blank", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getApplicationContext(), R.string.novel_id_tooltip, Toast.LENGTH_SHORT).show();
 					return;
 				}
 
@@ -117,7 +116,7 @@ public class MainActivity extends Activity {
 				etFromPage.setText("1");
 				etToPage.setText(String.valueOf(novelInfo.lastPage));
 
-				Toast.makeText(getApplicationContext(), "Analysis Done!", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getApplicationContext(), R.string.analysis_done_tooltip, Toast.LENGTH_SHORT).show();
 				btnDownload.setEnabled(true);
 			}
 		});
@@ -134,10 +133,10 @@ public class MainActivity extends Activity {
 				if (novelInfo.name.isEmpty()) {
 					AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
 					dialog.setIcon(android.R.drawable.ic_dialog_alert);
-					dialog.setTitle("Error");
-					dialog.setMessage("Novel name field cannot be blank");
+					dialog.setTitle(R.string.error_dialog_title);
+					dialog.setMessage(R.string.empty_name_dialog_msg);
 					dialog.setCancelable(false);
-					dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+					dialog.setPositiveButton(R.string.ok_btn, new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 						}
@@ -150,10 +149,10 @@ public class MainActivity extends Activity {
 						|| novelInfo.toPage > novelInfo.lastPage) {
 					AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
 					dialog.setIcon(android.R.drawable.ic_dialog_alert);
-					dialog.setTitle("Error");
-					dialog.setMessage("Please check page fields again");
+					dialog.setTitle(R.string.error_dialog_title);
+					dialog.setMessage(R.string.wrong_page_dialog_msg);
 					dialog.setCancelable(false);
-					dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+					dialog.setPositiveButton(R.string.ok_btn, new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 						}
@@ -170,7 +169,7 @@ public class MainActivity extends Activity {
 				pbDownload.setProgress(0);
 				pbDownload.setVisibility(View.VISIBLE);
 				tvDownloadStatus.setVisibility(View.VISIBLE);
-				tvDebug.setText("Downloading...");
+				tvStatus.setText(R.string.downloading_tooltip);
 
 				new Thread(new Runnable() {
 					@Override
@@ -210,17 +209,19 @@ public class MainActivity extends Activity {
 			switch (msg.what) {
 			case SUCCESS:
 				progressDialog.dismiss();
-				Toast.makeText(getApplicationContext(), "Novel Download Success!!", Toast.LENGTH_LONG).show();
-				tvDebug.setText(filename + " is saved");
+				Toast.makeText(getApplicationContext(), R.string.download_success_tooltip, Toast.LENGTH_LONG).show();
+				tvStatus.setText(filename + " " + getResources().getString(R.string.novel_saved_tooltip));
 				break;
 			case PREPARING:
 				pbDownload.setVisibility(View.GONE);
 				tvDownloadStatus.setVisibility(View.GONE);
-				progressDialog = ProgressDialog.show(MainActivity.this, "Wait", "Processing...");
+				progressDialog = ProgressDialog.show(MainActivity.this,
+						getResources().getString(R.string.progress_dialog_title),
+						getResources().getString(R.string.progress_dialog_msg));
 				break;
 			case FAIL:
-				Toast.makeText(getApplicationContext(), "Novel Download Fail :(", Toast.LENGTH_SHORT).show();
-				tvDebug.setText("Download failed");
+				Toast.makeText(getApplicationContext(), R.string.download_fail_tooltip, Toast.LENGTH_SHORT).show();
+				tvStatus.setText(R.string.download_fail_msg);
 				break;
 			}
 		}
@@ -258,9 +259,9 @@ public class MainActivity extends Activity {
 			AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
 			dialog.setIcon(android.R.drawable.ic_dialog_info);
 			dialog.setTitle(R.string.menu_about);
-			dialog.setMessage("Author: sh1r0");
+			dialog.setMessage(R.string.author_info);
 			dialog.setCancelable(false);
-			dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+			dialog.setPositiveButton(R.string.ok_btn, new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 				}
