@@ -196,10 +196,11 @@ public class MainActivity extends Activity {
 				}).start();
 			}
 		});
-
+/*
 		// debug use only
 		etID.setText("2800598");
 		spnDomain.setSelection(Site.CK101);
+*/
 	}
 
 	@SuppressLint("HandlerLeak")

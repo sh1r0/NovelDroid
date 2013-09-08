@@ -24,7 +24,8 @@ public class BookWriter {
 
 	public String makeBook() throws IOException {
 		String filename = bookName + ".txt";
-		writer = new OutputStreamWriter(new FileOutputStream(Settings.appDir + filename), "UTF-16LE");
+//		writer = new OutputStreamWriter(new FileOutputStream(Settings.appDir + filename), "UTF-16LE");
+		writer = new OutputStreamWriter(new FileOutputStream(Settings.appDir + filename), "UTF-8");
 
 		if (domainID == Site.CK101) {
 			AsyncTask<String, Integer, String>[] contentParsers = new Ck101Parser[Settings.threadNum];
