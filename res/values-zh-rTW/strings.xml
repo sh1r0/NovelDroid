@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">NovelDroid</string>
+    <string name="menu_about">關於</string>
+    <string name="menu_quit">關閉</string>
+    <string name="id_hint">小說ID</string>
+    <string name="novel_name">小說名稱</string>
+    <string name="author">作者</string>
+    <string name="author_hint">選填</string>
+    <string name="from_page">起始頁</string>
+    <string name="to_page">結束頁</string>
+    <string name="analyze">分析</string>
+    <string name="download">下載</string>
+    <string name="no_connection_tooltip">沒有網路連線</string>
+    <string name="novel_id_tooltip">請填入小說ID</string>
+    <string name="analysis_done_tooltip">分析完成</string>
+    <string name="ok_btn">確定</string>
+    <string name="error_dialog_title">錯誤</string>
+    <string name="empty_name_dialog_msg">請填入小說名稱</string>
+    <string name="wrong_page_dialog_msg">請確認頁數欄位是否有誤</string>
+    <string name="downloading_tooltip">下載中\u2026</string>
+    <string name="download_success_tooltip">小說下載成功!!</string>
+    <string name="download_fail_tooltip">小說下載失敗 :(</string>
+    <string name="download_fail_msg">下載失敗</string>
+    <string name="novel_saved_tooltip">已儲存</string>
+    <string name="progress_dialog_title">請稍候</string>
+    <string name="progress_dialog_msg">處理中\u2026</string>
+    <string name="author_info">作者: sh1r0</string>
+
+</resources>
