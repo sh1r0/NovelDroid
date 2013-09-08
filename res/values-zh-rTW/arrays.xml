@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="naming_rule">
+		<item>書名</item>
+		<item>書名_作者</item>
+		<item>作者_書名</item>
+	</string-array>
+</resources>

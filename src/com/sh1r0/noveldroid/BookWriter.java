@@ -22,10 +22,24 @@ public class BookWriter {
 		this.author = novelInfo.author;
 	}
 
-	public String makeBook() throws IOException {
-		String filename = bookName + ".txt";
-//		writer = new OutputStreamWriter(new FileOutputStream(Settings.appDir + filename), "UTF-16LE");
-		writer = new OutputStreamWriter(new FileOutputStream(Settings.appDir + filename), "UTF-8");
+	public String makeBook(String encoding, int namingRule) throws IOException {
+		String filename = "";
+		switch (namingRule) {
+			case 0:
+				filename = bookName + ".txt";
+				break;
+			case 1:
+				filename = bookName + "_" + author + ".txt";
+				break;
+			case 2:
+				filename = author + "_" + bookName + ".txt";
+				break;
+			default:
+				filename = bookName + ".txt";
+				break;
+		}
+		
+		writer = new OutputStreamWriter(new FileOutputStream(Settings.appDir + filename), encoding);
 
 		if (domainID == Site.CK101) {
 			AsyncTask<String, Integer, String>[] contentParsers = new Ck101Parser[Settings.threadNum];

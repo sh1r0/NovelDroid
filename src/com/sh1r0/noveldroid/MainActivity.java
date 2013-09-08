@@ -9,11 +9,14 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -48,6 +51,8 @@ public class MainActivity extends Activity {
 	private NovelInfo novelInfo;
 	private ProgressDialog progressDialog;
 	private String filename;
+	private SharedPreferences prefs;
+	private String[] encodings;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -66,8 +71,13 @@ public class MainActivity extends Activity {
 		spnDomain = (Spinner) findViewById(R.id.spn_doamin);
 		pbDownload = (ProgressBar) findViewById(R.id.progressbar);
 
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item,
-				Site.domainList);
+		encodings = this.getResources().getStringArray(R.array.encoding);
+
+		PreferenceManager.setDefaultValues(this, R.xml.settings, false);
+		prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, this
+				.getResources().getStringArray(R.array.domain));
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spnDomain.setAdapter(adapter);
 		spnDomain.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
@@ -181,7 +191,9 @@ public class MainActivity extends Activity {
 								throw new IOException();
 							} else {
 								mHandler.sendEmptyMessage(PREPARING);
-								filename = bookWriter.makeBook();
+								String encoding = encodings[Integer.parseInt(prefs.getString("encoding", null))];
+								filename = bookWriter.makeBook(encoding,
+										Integer.parseInt(prefs.getString("naming_rule", null)));
 								if (filename == null) {
 									throw new IOException();
 								} else {
@@ -196,11 +208,6 @@ public class MainActivity extends Activity {
 				}).start();
 			}
 		});
-/*
-		// debug use only
-		etID.setText("2800598");
-		spnDomain.setSelection(Site.CK101);
-*/
 	}
 
 	@SuppressLint("HandlerLeak")
@@ -256,6 +263,9 @@ public class MainActivity extends Activity {
 
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+		case R.id.menu_settings:
+			startActivity(new Intent(this, PrefsActivity.class));
+			break;
 		case R.id.menu_about:
 			AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
 			dialog.setIcon(android.R.drawable.ic_dialog_info);
@@ -276,6 +286,12 @@ public class MainActivity extends Activity {
 			break;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	protected void onResume() {
+		prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		super.onResume();
 	}
 
 	private boolean isNetworkConnected() {

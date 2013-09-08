@@ -10,12 +10,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 public class Analysis {
 	public static NovelInfo analysisUrl(int domainID, String tid) throws Exception {
 		NovelInfo result = new NovelInfo();
-		Log.d("Debug", Site.domainList[domainID] + ": " + tid);
 		result.domainID = domainID;
 		result.tid = tid;
 		result.lastPage = 1;

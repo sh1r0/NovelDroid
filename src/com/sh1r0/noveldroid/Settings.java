@@ -7,5 +7,4 @@ public final class Settings {
 	public static final String appDir = Environment.getExternalStorageDirectory().getAbsolutePath()
 			+ "/NovelDroid/";
 	public static final String tempDir = appDir + "temp/";
-	
 }

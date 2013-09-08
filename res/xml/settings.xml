@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <ListPreference 
+        android:title="@string/encoding"
+        android:key="encoding"
+        android:entries="@array/encoding"
+		android:entryValues="@array/encoding_value"
+		android:defaultValue="0"
+        android:dialogTitle="@string/encoding_dialog_title"
+        />
+    
+    <ListPreference
+        android:title="@string/filename_rule"
+        android:key="naming_rule"
+        android:entries="@array/naming_rule"
+		android:entryValues="@array/naming_rule_value"
+		android:defaultValue="0"
+        android:dialogTitle="@string/filename_rule_dialog_title"
+        />
+
+</PreferenceScreen>

@@ -27,5 +27,10 @@
     <string name="progress_dialog_title">請稍候</string>
     <string name="progress_dialog_msg">處理中\u2026</string>
     <string name="author_info">作者: sh1r0</string>
+    <string name="settings">設定</string>
+    <string name="encoding">編碼</string>
+    <string name="encoding_dialog_title">選擇檔案編碼</string>
+    <string name="filename_rule">檔案名稱規則</string>
+    <string name="filename_rule_dialog_title">選擇命名規則</string>
 
 </resources>
