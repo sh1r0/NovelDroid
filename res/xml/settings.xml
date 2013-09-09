@@ -5,8 +5,8 @@
         android:title="@string/encoding"
         android:key="encoding"
         android:entries="@array/encoding"
-		android:entryValues="@array/encoding_value"
-		android:defaultValue="0"
+		android:entryValues="@array/encoding"
+		android:defaultValue="UTF-8"
         android:dialogTitle="@string/encoding_dialog_title"
         />
     
@@ -20,8 +20,13 @@
         />
     
     <Preference
-            android:title="Download Folder"
-            android:key="down_dir" 
-    />
+        android:title="Download Folder"
+        android:key="down_dir"
+    	/>
+    
+	<Preference 
+	    android:title="@string/about"
+	    android:key="about"
+	    />
 
 </PreferenceScreen>
