@@ -16,7 +16,7 @@ public class BookWriter {
 	private OutputStreamWriter writer;
 
 	public BookWriter(NovelInfo novelInfo) {
-		fileName = new String[Settings.threadNum][];
+		fileName = new String[Config.threadNum][];
 		this.domainID = novelInfo.domainID;
 		this.bookName = novelInfo.name;
 		this.author = novelInfo.author;
@@ -39,29 +39,29 @@ public class BookWriter {
 				break;
 		}
 		
-		writer = new OutputStreamWriter(new FileOutputStream(Settings.appDir + filename), encoding);
+		writer = new OutputStreamWriter(new FileOutputStream(Config.appDir + filename), encoding);
 
 		if (domainID == Site.CK101) {
-			AsyncTask<String, Integer, String>[] contentParsers = new Ck101Parser[Settings.threadNum];
-			for (int i = 0; i < Settings.threadNum; i++) {
+			AsyncTask<String, Integer, String>[] contentParsers = new Ck101Parser[Config.threadNum];
+			for (int i = 0; i < Config.threadNum; i++) {
 				contentParsers[i] = new Ck101Parser();
 				contentParsers[i].executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, fileName[i]);
 			}
 			try {
-				for (int i = 0; i < Settings.threadNum; i++) {
+				for (int i = 0; i < Config.threadNum; i++) {
 					writer.write(contentParsers[i].get());
 				}
 			} catch (Exception e) {
 				return null;
 			}
 		} else if (domainID == Site.EYNY) {
-			AsyncTask<String, Integer, String>[] contentParsers = new EynyParser[Settings.threadNum];
-			for (int i = 0; i < Settings.threadNum; i++) {
+			AsyncTask<String, Integer, String>[] contentParsers = new EynyParser[Config.threadNum];
+			for (int i = 0; i < Config.threadNum; i++) {
 				contentParsers[i] = new EynyParser();
 				contentParsers[i].executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, fileName[i]);
 			}
 			try {
-				for (int i = 0; i < Settings.threadNum; i++) {
+				for (int i = 0; i < Config.threadNum; i++) {
 					writer.write(contentParsers[i].get());
 				}
 			} catch (Exception e) {
@@ -89,7 +89,7 @@ public class BookWriter {
 	public void delTempFile() {
 		Log.d("Debug", "刪除暫存檔中..");
 		File temp;
-		for (int n = 0; n < Settings.threadNum; n++) {
+		for (int n = 0; n < Config.threadNum; n++) {
 			for (int m = 0; m < fileName[n].length; m++) {
 				temp = new File(fileName[n][m]);
 				if (temp.exists())

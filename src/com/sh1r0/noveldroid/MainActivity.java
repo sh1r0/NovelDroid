@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -52,7 +53,7 @@ public class MainActivity extends Activity {
 	private ProgressDialog progressDialog;
 	private String filename;
 	private SharedPreferences prefs;
-	private String[] encodings;
+	private String[] encodingList;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +72,7 @@ public class MainActivity extends Activity {
 		spnDomain = (Spinner) findViewById(R.id.spn_doamin);
 		pbDownload = (ProgressBar) findViewById(R.id.progressbar);
 
-		encodings = this.getResources().getStringArray(R.array.encoding);
+		encodingList = this.getResources().getStringArray(R.array.encoding);
 
 		PreferenceManager.setDefaultValues(this, R.xml.settings, false);
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -171,7 +172,7 @@ public class MainActivity extends Activity {
 					return;
 				}
 
-				File tempDir = new File(Settings.tempDir);
+				File tempDir = new File(Config.tempDir);
 				if (!tempDir.exists()) {
 					tempDir.mkdirs();
 				}
@@ -191,7 +192,7 @@ public class MainActivity extends Activity {
 								throw new IOException();
 							} else {
 								mHandler.sendEmptyMessage(PREPARING);
-								String encoding = encodings[Integer.parseInt(prefs.getString("encoding", null))];
+								String encoding = encodingList[Integer.parseInt(prefs.getString("encoding", null))];
 								filename = bookWriter.makeBook(encoding,
 										Integer.parseInt(prefs.getString("naming_rule", null)));
 								if (filename == null) {
@@ -264,7 +265,11 @@ public class MainActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_settings:
-			startActivity(new Intent(this, PrefsActivity.class));
+			if (Build.VERSION.SDK_INT < 11) {
+				startActivity(new Intent(this, GingerbreadPrefsActivity.class));
+			} else {
+				startActivity(new Intent(this, PrefsActivity.class));
+			}
 			break;
 		case R.id.menu_about:
 			AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);

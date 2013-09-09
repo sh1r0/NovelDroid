@@ -33,6 +33,14 @@
         	    <category android:name="android.intent.category.PREFERENCE" />
 		    </intent-filter>
 		</activity>
+		<activity
+			android:name="com.sh1r0.noveldroid.GingerbreadPrefsActivity"
+			android:label="@string/settings"
+			android:screenOrientation="portrait" >
+            <intent-filter>
+        	    <category android:name="android.intent.category.PREFERENCE" />
+		    </intent-filter>
+		</activity>
     </application>
 
 </manifest>

@@ -33,16 +33,16 @@ public class Downloader {
 		int n = 0;
 		for (int i = novelInfo.fromPage; i <= novelInfo.toPage; i++) {
 			urlStrings[n] = prefix + i + postfix;
-			tempFilePaths[n] = Settings.tempDir + novelInfo.tid + "-" + i + ".html";
+			tempFilePaths[n] = Config.tempDir + novelInfo.tid + "-" + i + ".html";
 			n++;
 		}
 	}
 
 	public boolean startDownload(BookWriter bookWriter, Handler progressHandler) throws IOException {
 		generateUrlList();
-		int minTaskNum = urlStrings.length / Settings.threadNum; // min #tasks of each thread
-		int leftTaskNum = urlStrings.length % Settings.threadNum; // totalTaskNum = minTaskNum * threadNum + leftTaskNum
-		DownloadThread[] downloadThread = new DownloadThread[Settings.threadNum];
+		int minTaskNum = urlStrings.length / Config.threadNum; // min #tasks of each thread
+		int leftTaskNum = urlStrings.length % Config.threadNum; // totalTaskNum = minTaskNum * threadNum + leftTaskNum
+		DownloadThread[] downloadThread = new DownloadThread[Config.threadNum];
 		String[] src;
 		String[] dst;
 		
@@ -54,7 +54,7 @@ public class Downloader {
 		// assign job to each DownloadThread
 		int m = 0;
 		int taskNum;
-		for (int x = 0; x < Settings.threadNum; x++) {
+		for (int x = 0; x < Config.threadNum; x++) {
 			if (leftTaskNum > 0) {
 				taskNum = minTaskNum + 1;
 				leftTaskNum--;
@@ -74,13 +74,13 @@ public class Downloader {
 		
 		// wait for termination of each DownloadThread
 		try {
-			for (int x = 0; x < Settings.threadNum; x++) {
+			for (int x = 0; x < Config.threadNum; x++) {
 				downloadThread[x].join();
 			}
 		} catch (InterruptedException e) {
 		}
 		
-		for (int x = 0; x < Settings.threadNum; x++) {
+		for (int x = 0; x < Config.threadNum; x++) {
 			if (!downloadThread[x].downloadstate)
 				return false;
 		}

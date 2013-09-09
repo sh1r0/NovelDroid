@@ -18,5 +18,10 @@
 		android:defaultValue="0"
         android:dialogTitle="@string/filename_rule_dialog_title"
         />
+    
+    <Preference
+            android:title="Download Folder"
+            android:key="down_dir" 
+    />
 
 </PreferenceScreen>
