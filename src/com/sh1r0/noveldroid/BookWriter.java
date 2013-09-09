@@ -22,7 +22,12 @@ public class BookWriter {
 		this.author = novelInfo.author;
 	}
 
-	public String makeBook(String encoding, int namingRule) throws IOException {
+	public String makeBook(String downDirPath, int namingRule, String encoding) throws IOException {
+		File downDir = new File(downDirPath);
+		if (!downDir.exists()) {
+			downDir.mkdirs();
+		}
+		
 		String filename = "";
 		switch (namingRule) {
 			case 0:
@@ -39,7 +44,7 @@ public class BookWriter {
 				break;
 		}
 		
-		writer = new OutputStreamWriter(new FileOutputStream(Config.appDir + filename), encoding);
+		writer = new OutputStreamWriter(new FileOutputStream(downDirPath + filename), encoding);
 
 		if (domainID == Site.CK101) {
 			AsyncTask<String, Integer, String>[] contentParsers = new Ck101Parser[Config.threadNum];

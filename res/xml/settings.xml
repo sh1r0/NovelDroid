@@ -20,7 +20,7 @@
         />
     
     <Preference
-        android:title="Download Folder"
+        android:title="@string/download_folder"
         android:key="down_dir"
     	/>
     

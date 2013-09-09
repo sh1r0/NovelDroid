@@ -13,23 +13,43 @@ public class GingerbreadPrefsActivity extends PreferenceActivity implements OnSh
 	private static final String KEY_ENCODING = "encoding";
 	private static final String KEY_NAMING_RULE = "naming_rule";
 	private static final String KEY_ABOUT = "about";
-	
+	private static final String KEY_DOWN_DIR = "down_dir";
+
 	private String[] namingRuleList;
 	private Preference encoding;
 	private Preference namingRule;
+	private Preference downDir;
 	private Preference about;
 	private int namingRulePref;
-	
+	private SharedPreferences prefs;
+
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.settings);
 		namingRuleList = this.getResources().getStringArray(R.array.naming_rule);
-		
+
 		encoding = findPreference(KEY_ENCODING);
 		namingRule = findPreference(KEY_NAMING_RULE);
-		
+
+		downDir = findPreference(KEY_DOWN_DIR);
+		downDir.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				DirectoryChooserDialog directoryChooserDialog = new DirectoryChooserDialog(
+						GingerbreadPrefsActivity.this, new DirectoryChooserDialog.ChosenDirectoryListener() {
+							@Override
+							public void onChosenDir(String chosenDir) {
+								downDir.getEditor().putString(KEY_DOWN_DIR, chosenDir + "/").commit();
+							}
+						});
+				directoryChooserDialog.setNewFolderEnabled(true);
+				directoryChooserDialog.chooseDirectory(prefs.getString(KEY_DOWN_DIR, Config.appDir));
+				return true;
+			}
+		});
+
 		about = findPreference(KEY_ABOUT);
 		about.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			@Override
@@ -48,6 +68,8 @@ public class GingerbreadPrefsActivity extends PreferenceActivity implements OnSh
 				return true;
 			}
 		});
+
+		prefs = getPreferenceManager().getSharedPreferences();
 	}
 
 	@Override
@@ -57,24 +79,26 @@ public class GingerbreadPrefsActivity extends PreferenceActivity implements OnSh
 		} else if (key.equals(KEY_NAMING_RULE)) {
 			namingRulePref = Integer.parseInt(sharedPreferences.getString(KEY_NAMING_RULE, "0"));
 			namingRule.setSummary(namingRuleList[namingRulePref]);
+		} else if (key.equals(KEY_DOWN_DIR)) {
+			downDir.setSummary(sharedPreferences.getString(KEY_DOWN_DIR, Config.appDir));
 		}
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onResume() {
-	    super.onResume();
-	    SharedPreferences sharedPreferences = getPreferenceManager().getSharedPreferences();
-	    encoding.setSummary(sharedPreferences.getString(KEY_ENCODING, "UTF-8"));
-		namingRulePref = Integer.parseInt(sharedPreferences.getString(KEY_NAMING_RULE, "0"));
+		super.onResume();
+		encoding.setSummary(prefs.getString(KEY_ENCODING, "UTF-8"));
+		namingRulePref = Integer.parseInt(prefs.getString(KEY_NAMING_RULE, "0"));
 		namingRule.setSummary(namingRuleList[namingRulePref]);
-	    getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+		downDir.setSummary(prefs.getString(KEY_DOWN_DIR, Config.appDir));
+		getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onPause() {
-	    getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
-	    super.onPause();
+		getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+		super.onPause();
 	}
 }

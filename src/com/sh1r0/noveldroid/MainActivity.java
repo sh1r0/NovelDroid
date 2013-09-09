@@ -53,7 +53,8 @@ public class MainActivity extends Activity {
 	private ProgressDialog progressDialog;
 	private String filename;
 	private SharedPreferences prefs;
-	private String[] encodingList;
+	private String downDirPath;
+	private String encoding;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -72,9 +73,10 @@ public class MainActivity extends Activity {
 		spnDomain = (Spinner) findViewById(R.id.spn_doamin);
 		pbDownload = (ProgressBar) findViewById(R.id.progressbar);
 
-		encodingList = this.getResources().getStringArray(R.array.encoding);
-
 		PreferenceManager.setDefaultValues(this, R.xml.settings, false);
+		// prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		// downDirPath = prefs.getString("down_dir", Config.appDir);
+		// prefs.edit().putString("down_dir", downDirPath).commit();
 
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, this
 				.getResources().getStringArray(R.array.domain));
@@ -191,9 +193,10 @@ public class MainActivity extends Activity {
 								throw new IOException();
 							} else {
 								mHandler.sendEmptyMessage(PREPARING);
-								String encoding = encodingList[Integer.parseInt(prefs.getString("encoding", "0"))];
-								filename = bookWriter.makeBook(encoding,
-										Integer.parseInt(prefs.getString("naming_rule", "0")));
+								encoding = prefs.getString("encoding", "UTF-8");
+								downDirPath = prefs.getString("down_dir", Config.appDir);
+								filename = bookWriter.makeBook(downDirPath,
+										Integer.parseInt(prefs.getString("naming_rule", "0")), encoding);
 								if (filename == null) {
 									throw new IOException();
 								} else {
