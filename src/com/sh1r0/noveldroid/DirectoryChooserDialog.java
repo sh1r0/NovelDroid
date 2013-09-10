@@ -156,8 +156,8 @@ public class DirectoryChooserDialog {
 		}
 
 		Collections.sort(dirs, new Comparator<String>() {
-			public int compare(String o1, String o2) {
-				return o1.compareTo(o2);
+			public int compare(String s1, String s2) {
+				return s1.toLowerCase().compareTo(s2.toLowerCase());
 			}
 		});
 
