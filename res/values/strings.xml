@@ -16,6 +16,7 @@
     <string name="analysis_done_tooltip">Analysis Done!</string>
     <string name="ok_btn">OK</string>
     <string name="cancel_btn">Cancel</string>
+    <string name="close_btn">Close</string>
     <string name="error_dialog_title">Error</string>
     <string name="empty_name_dialog_msg">Novel name field cannot be blank</string>
     <string name="wrong_page_dialog_msg">Please check page fields again</string>
@@ -27,6 +28,7 @@
     <string name="progress_dialog_title">Wait</string>
     <string name="progress_dialog_msg">Processing\u2026</string>
     <string name="author_info">Author: sh1r0</string>
+    <string name="search">Search</string>
     <string name="settings">Settings</string>
     <string name="about">About</string>
     <string name="encoding">Encoding</string>

@@ -19,11 +19,14 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -48,14 +51,16 @@ public class MainActivity extends Activity {
 	private TextView tvStatus;
 	private TextView tvDownloadStatus;
 	private Spinner spnDomain;
+	private WebView wvSearch;
 	private ProgressBar pbDownload;
 	private NovelInfo novelInfo;
 	private ProgressDialog progressDialog;
-	private String filename;
 	private SharedPreferences prefs;
+	private String filename;
 	private String downDirPath;
 	private String encoding;
 
+	@SuppressLint("SetJavaScriptEnabled")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -74,9 +79,6 @@ public class MainActivity extends Activity {
 		pbDownload = (ProgressBar) findViewById(R.id.progressbar);
 
 		PreferenceManager.setDefaultValues(this, R.xml.settings, false);
-		// prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		// downDirPath = prefs.getString("down_dir", Config.appDir);
-		// prefs.edit().putString("down_dir", downDirPath).commit();
 
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, this
 				.getResources().getStringArray(R.array.domain));
@@ -211,6 +213,16 @@ public class MainActivity extends Activity {
 				}).start();
 			}
 		});
+		
+		wvSearch = (WebView) findViewById(R.id.wv_search);
+		wvSearch.getSettings().setJavaScriptEnabled(true);
+		wvSearch.setWebViewClient(new WebViewClient() {
+			@Override
+			public boolean shouldOverrideUrlLoading(WebView view, String url) {
+				view.loadUrl(url);
+				return true;
+			}
+		});
 	}
 
 	@SuppressLint("HandlerLeak")
@@ -259,6 +271,20 @@ public class MainActivity extends Activity {
 	};
 
 	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if ((keyCode == KeyEvent.KEYCODE_BACK) && wvSearch.isShown()) {
+			if (wvSearch.canGoBack()) {
+				wvSearch.goBack();
+			} else {
+				wvSearch.setVisibility(View.GONE);
+				wvSearch.loadUrl("about:blank");
+			}
+			return true;       
+        }
+		return  super.onKeyDown(keyCode, event);
+	};
+
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
@@ -266,6 +292,10 @@ public class MainActivity extends Activity {
 
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+		case R.id.menu_search:
+			wvSearch.loadUrl("https://googledrive.com/host/0By9mvBCbgqrycV9naFJSYm5mbjQ");
+			wvSearch.setVisibility(View.VISIBLE);
+			break;
 		case R.id.menu_settings:
 			if (Build.VERSION.SDK_INT < 11) {
 				startActivity(new Intent(this, GingerbreadPrefsActivity.class));
