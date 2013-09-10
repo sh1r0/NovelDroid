@@ -31,6 +31,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -59,6 +60,8 @@ public class MainActivity extends Activity {
 	private String filename;
 	private String downDirPath;
 	private String encoding;
+	private LinearLayout searchLayout;
+	private Button btnClose;
 
 	@SuppressLint("SetJavaScriptEnabled")
 	@Override
@@ -223,6 +226,15 @@ public class MainActivity extends Activity {
 				return true;
 			}
 		});
+		searchLayout = (LinearLayout) findViewById(R.id.search_layout);
+		btnClose = (Button) findViewById(R.id.btn_close);
+		btnClose.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				searchLayout.setVisibility(View.INVISIBLE);
+				wvSearch.loadUrl("about:blank");
+			}
+		});
 	}
 
 	@SuppressLint("HandlerLeak")
@@ -276,7 +288,8 @@ public class MainActivity extends Activity {
 			if (wvSearch.canGoBack()) {
 				wvSearch.goBack();
 			} else {
-				wvSearch.setVisibility(View.GONE);
+//				wvSearch.setVisibility(View.GONE);
+				searchLayout.setVisibility(View.GONE);
 				wvSearch.loadUrl("about:blank");
 			}
 			return true;       
@@ -294,7 +307,8 @@ public class MainActivity extends Activity {
 		switch (item.getItemId()) {
 		case R.id.menu_search:
 			wvSearch.loadUrl("https://googledrive.com/host/0By9mvBCbgqrycV9naFJSYm5mbjQ");
-			wvSearch.setVisibility(View.VISIBLE);
+//			wvSearch.setVisibility(View.VISIBLE);
+			searchLayout.setVisibility(View.VISIBLE);
 			break;
 		case R.id.menu_settings:
 			if (Build.VERSION.SDK_INT < 11) {
