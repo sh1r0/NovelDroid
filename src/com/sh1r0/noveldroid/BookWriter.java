@@ -45,6 +45,9 @@ public class BookWriter {
 		}
 		
 		writer = new OutputStreamWriter(new FileOutputStream(downDirPath + filename), encoding);
+		if (encoding.equals("UTF-16LE")) { // inject BOM
+			writer.write("\uFEFF");
+		}
 
 		if (domainID == Site.CK101) {
 			AsyncTask<String, Integer, String>[] contentParsers = new Ck101Parser[Config.threadNum];
