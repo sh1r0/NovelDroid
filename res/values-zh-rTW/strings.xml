@@ -16,6 +16,7 @@
     <string name="analysis_done_tooltip">分析完成</string>
     <string name="ok_btn">確定</string>
     <string name="cancel_btn">取消</string>
+    <string name="close_btn">關閉</string>
     <string name="error_dialog_title">錯誤</string>
     <string name="empty_name_dialog_msg">請填入小說名稱</string>
     <string name="wrong_page_dialog_msg">請確認頁數欄位是否有誤</string>

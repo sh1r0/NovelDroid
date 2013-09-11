@@ -273,19 +273,17 @@ public class MainActivity extends Activity {
 		case R.id.menu_search:
 			LayoutInflater factory = LayoutInflater.from(this);
 			final View deleteDialogView = factory.inflate(R.layout.search_dialog, null);
-			final AlertDialog searchDialog = new AlertDialog.Builder(this).setNegativeButton(R.string.close_btn, null)
-					.create();
+			final AlertDialog searchDialog = new AlertDialog.Builder(this).setTitle(R.string.search)
+					.setNegativeButton(R.string.close_btn, null).create();
 			searchDialog.setView(deleteDialogView);
-			
+
 			final WebView wv = (WebView) deleteDialogView.findViewById(R.id.wv_something);
 			wv.getSettings().setJavaScriptEnabled(true);
-			wv.getSettings().setAllowUniversalAccessFromFileURLs(true);
 			wv.loadUrl("https://googledrive.com/host/0By9mvBCbgqrycV9naFJSYm5mbjQ");
 			wv.setWebViewClient(new WebViewClient() {
 				@Override
 				public boolean shouldOverrideUrlLoading(WebView view, String url) {
 					view.loadUrl(url);
-					Log.d("Debug", url);
 					return true;
 				}
 			});
