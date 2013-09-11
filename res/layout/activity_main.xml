@@ -148,24 +148,4 @@
         android:gravity="center"
         android:visibility="gone" />
 
-    <LinearLayout
-        android:id="@+id/search_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="#FFFFFF"
-        android:visibility="gone" >
-
-        <Button
-            android:id="@+id/btn_close"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/close_btn" />
-
-        <WebView
-            android:id="@+id/wv_search"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent" />
-    </LinearLayout>
-
 </RelativeLayout>
