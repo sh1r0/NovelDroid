@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 
 import android.os.AsyncTask;
+import android.os.Build;
 import android.util.Log;
 
 public class BookWriter {
@@ -27,23 +28,23 @@ public class BookWriter {
 		if (!downDir.exists()) {
 			downDir.mkdirs();
 		}
-		
+
 		String filename = "";
 		switch (namingRule) {
-			case 0:
-				filename = bookName + ".txt";
-				break;
-			case 1:
-				filename = bookName + "_" + author + ".txt";
-				break;
-			case 2:
-				filename = author + "_" + bookName + ".txt";
-				break;
-			default:
-				filename = bookName + ".txt";
-				break;
+		case 0:
+			filename = bookName + ".txt";
+			break;
+		case 1:
+			filename = bookName + "_" + author + ".txt";
+			break;
+		case 2:
+			filename = author + "_" + bookName + ".txt";
+			break;
+		default:
+			filename = bookName + ".txt";
+			break;
 		}
-		
+
 		writer = new OutputStreamWriter(new FileOutputStream(downDirPath + filename), encoding);
 		if (encoding.equals("UTF-16LE")) { // inject BOM
 			writer.write("\uFEFF");
@@ -53,7 +54,11 @@ public class BookWriter {
 			AsyncTask<String, Integer, String>[] contentParsers = new Ck101Parser[Config.threadNum];
 			for (int i = 0; i < Config.threadNum; i++) {
 				contentParsers[i] = new Ck101Parser();
-				contentParsers[i].executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, fileName[i]);
+				if (Build.VERSION.SDK_INT < 11) {
+					contentParsers[i].execute(fileName[i]);
+				} else {
+					contentParsers[i].executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, fileName[i]);
+				}
 			}
 			try {
 				for (int i = 0; i < Config.threadNum; i++) {
@@ -66,7 +71,11 @@ public class BookWriter {
 			AsyncTask<String, Integer, String>[] contentParsers = new EynyParser[Config.threadNum];
 			for (int i = 0; i < Config.threadNum; i++) {
 				contentParsers[i] = new EynyParser();
-				contentParsers[i].executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, fileName[i]);
+				if (Build.VERSION.SDK_INT < 11) {
+					contentParsers[i].execute(fileName[i]);
+				} else {
+					contentParsers[i].executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, fileName[i]);
+				}
 			}
 			try {
 				for (int i = 0; i < Config.threadNum; i++) {
@@ -79,10 +88,10 @@ public class BookWriter {
 
 		writer.flush();
 		writer.close();
-		
+
 		Log.d("Debug", "小說製作完成");
 		delTempFile();
-		
+
 		return filename;
 	}
 
