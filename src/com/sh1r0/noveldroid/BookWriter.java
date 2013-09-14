@@ -51,29 +51,30 @@ public class BookWriter {
 		}
 
 		AbstractParser[] parsers = new AbstractParser[Config.threadNum];
+		Class<?> parserClass = null;
+		try {
+			parserClass = Site.parserClasses[domainID];
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		if (Build.VERSION.SDK_INT < 11) {
-			if (domainID == Site.CK101) {
-				for (int i = 0; i < Config.threadNum; i++) {
-					parsers[i] = new Ck101Parser();
-					parsers[i].execute(fileName[i]);
+			for (int i = 0; i < Config.threadNum; i++) {
+				try {
+					parsers[i] = (AbstractParser) parserClass.newInstance();
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-			} else if (domainID == Site.EYNY) {
-				for (int i = 0; i < Config.threadNum; i++) {
-					parsers[i] = new EynyParser();
-					parsers[i].execute(fileName[i]);
-				}
+				parsers[i].execute(fileName[i]);
 			}
 		} else {
-			if (domainID == Site.CK101) {
-				for (int i = 0; i < Config.threadNum; i++) {
-					parsers[i] = new Ck101Parser();
-					parsers[i].executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, fileName[i]);
+			for (int i = 0; i < Config.threadNum; i++) {
+				try {
+					parsers[i] = (AbstractParser) parserClass.newInstance();
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-			} else if (domainID == Site.EYNY) {
-				for (int i = 0; i < Config.threadNum; i++) {
-					parsers[i] = new EynyParser();
-					parsers[i].executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, fileName[i]);
-				}
+				parsers[i].executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, fileName[i]);
 			}
 		}
 
@@ -96,10 +97,6 @@ public class BookWriter {
 
 	public void addFileName(int threadID, String[] temp) {
 		fileName[threadID] = temp;
-	}
-
-	public void setBookName(String data) {
-		bookName = data;
 	}
 
 	public void delTempFile() {

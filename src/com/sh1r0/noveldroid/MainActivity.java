@@ -234,6 +234,8 @@ public class MainActivity extends Activity {
 						getResources().getString(R.string.progress_dialog_msg));
 				break;
 			case FAIL:
+				if (progressDialog.isShowing())
+					progressDialog.dismiss();
 				Toast.makeText(getApplicationContext(), R.string.download_fail_tooltip, Toast.LENGTH_SHORT).show();
 				tvStatus.setText(R.string.download_fail_msg);
 				break;
