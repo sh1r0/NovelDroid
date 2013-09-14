@@ -9,10 +9,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
-public class Ck101Parser extends AsyncTask<String, Integer, String> {	
+public class Ck101Parser extends AbstractParser {	
 	@Override
 	protected String doInBackground(String... htmls) {
 		StringBuilder bookData = new StringBuilder();

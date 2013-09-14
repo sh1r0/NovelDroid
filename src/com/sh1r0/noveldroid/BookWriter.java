@@ -50,40 +50,39 @@ public class BookWriter {
 			writer.write("\uFEFF");
 		}
 
-		if (domainID == Site.CK101) {
-			AsyncTask<String, Integer, String>[] contentParsers = new Ck101Parser[Config.threadNum];
-			for (int i = 0; i < Config.threadNum; i++) {
-				contentParsers[i] = new Ck101Parser();
-				if (Build.VERSION.SDK_INT < 11) {
-					contentParsers[i].execute(fileName[i]);
-				} else {
-					contentParsers[i].executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, fileName[i]);
-				}
-			}
-			try {
+		AbstractParser[] parsers = new AbstractParser[Config.threadNum];
+		if (Build.VERSION.SDK_INT < 11) {
+			if (domainID == Site.CK101) {
 				for (int i = 0; i < Config.threadNum; i++) {
-					writer.write(contentParsers[i].get());
+					parsers[i] = new Ck101Parser();
+					parsers[i].execute(fileName[i]);
 				}
-			} catch (Exception e) {
-				return null;
-			}
-		} else if (domainID == Site.EYNY) {
-			AsyncTask<String, Integer, String>[] contentParsers = new EynyParser[Config.threadNum];
-			for (int i = 0; i < Config.threadNum; i++) {
-				contentParsers[i] = new EynyParser();
-				if (Build.VERSION.SDK_INT < 11) {
-					contentParsers[i].execute(fileName[i]);
-				} else {
-					contentParsers[i].executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, fileName[i]);
-				}
-			}
-			try {
+			} else if (domainID == Site.EYNY) {
 				for (int i = 0; i < Config.threadNum; i++) {
-					writer.write(contentParsers[i].get());
+					parsers[i] = new EynyParser();
+					parsers[i].execute(fileName[i]);
 				}
-			} catch (Exception e) {
-				return null;
 			}
+		} else {
+			if (domainID == Site.CK101) {
+				for (int i = 0; i < Config.threadNum; i++) {
+					parsers[i] = new Ck101Parser();
+					parsers[i].executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, fileName[i]);
+				}
+			} else if (domainID == Site.EYNY) {
+				for (int i = 0; i < Config.threadNum; i++) {
+					parsers[i] = new EynyParser();
+					parsers[i].executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, fileName[i]);
+				}
+			}
+		}
+
+		try {
+			for (int i = 0; i < Config.threadNum; i++) {
+				writer.write(parsers[i].get());
+			}
+		} catch (Exception e) {
+			return null;
 		}
 
 		writer.flush();
