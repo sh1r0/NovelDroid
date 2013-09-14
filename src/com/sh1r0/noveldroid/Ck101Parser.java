@@ -62,12 +62,9 @@ public class Ck101Parser extends AbstractParser {
 					case 2:
 						if (line.indexOf("class=\"postmessage\">") >= 0) {
 							stage = 3;
-							if (line.indexOf("<i class=\"pstatus\">") >= 0) { // filter out modified time
-								line = line.replaceAll("<i class=\"pstatus\">[^<>]+ </i>", "");
-							}
 							if (line.indexOf("<div class=\"quote\">") >= 0) { // filter out quotes
 								otherTable++;
-								line = line.replaceAll("<font color=\"#999999\">[^<>]+</font>", "");
+								break;
 							}
 							line += "\r\n";
 							line = Replace.replace(line, "<br/>", "\r\n");
@@ -80,13 +77,13 @@ public class Ck101Parser extends AbstractParser {
 						}
 						break;
 					case 3:
-						if (line.indexOf("<div ") >= 0) // 避免碰到下一階層
+						if (line.indexOf("<div ") >= 0)
 							otherTable++;
 						if (line.indexOf("</div>") >= 0) {
-							if (otherTable > 0)// 從底層離開
+							if (otherTable > 0) {
 								otherTable--;
-							else { // 偵測是否離開了
-								line = line.replace("</div>", " ");
+								break;
+							} else {
 								stage = 0;
 								line += "\r\n";
 							}
@@ -95,9 +92,11 @@ public class Ck101Parser extends AbstractParser {
 							line = Replace.replace(line, "&nbsp;", "");
 							line = Replace.replace(line, "<br/>", "\r\n");
 							line = Replace.replace(line, "<br />", "\r\n");
+							if (line.indexOf("<i class=\"pstatus\">") >= 0) { // filter out modified time
+								line = line.replaceAll("<i class=\"pstatus\">[^<>]+ </i>", "");
+							}
 							m_html = p_html.matcher(line);
 							line = m_html.replaceAll("");
-							line = line.replaceFirst(" 本帖最後由 \\S+ 於 \\d{4}-\\d{1,2}-\\d{1,2} \\d{2}:\\d{2} (\\S{2} )?編輯 ", "");
 							line = line.replaceAll("^[ \t　]+", "");
 							if (line.length() > 2)
 								line = "　　" + line;
