@@ -3,7 +3,7 @@ NovelDroid
 An android app for extracting novel contents from forum posts
 
 ##Latest Version
-1.1.5
+1.1.9
 
 ##Supporting Sites
 * cklol

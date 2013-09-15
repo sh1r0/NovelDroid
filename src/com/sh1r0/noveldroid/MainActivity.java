@@ -6,6 +6,8 @@ import java.io.IOException;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,11 +15,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -60,6 +64,7 @@ public class MainActivity extends Activity {
 	private String filename;
 	private String downDirPath;
 	private String encoding;
+	private NotificationManager mNotificationManager;
 
 	@SuppressLint("SetJavaScriptEnabled")
 	@Override
@@ -221,24 +226,40 @@ public class MainActivity extends Activity {
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
-			case SUCCESS:
-				progressDialog.dismiss();
-				Toast.makeText(getApplicationContext(), R.string.download_success_tooltip, Toast.LENGTH_LONG).show();
-				tvStatus.setText(filename + " " + getResources().getString(R.string.novel_saved_tooltip));
-				break;
-			case PREPARING:
-				pbDownload.setVisibility(View.GONE);
-				tvDownloadStatus.setVisibility(View.GONE);
-				progressDialog = ProgressDialog.show(MainActivity.this,
-						getResources().getString(R.string.progress_dialog_title),
-						getResources().getString(R.string.progress_dialog_msg));
-				break;
-			case FAIL:
-				if (progressDialog.isShowing())
+				case SUCCESS:
 					progressDialog.dismiss();
-				Toast.makeText(getApplicationContext(), R.string.download_fail_tooltip, Toast.LENGTH_SHORT).show();
-				tvStatus.setText(R.string.download_fail_msg);
-				break;
+					Toast.makeText(getApplicationContext(), R.string.download_success_tooltip, Toast.LENGTH_LONG)
+							.show();
+					tvStatus.setText(filename + " " + getResources().getString(R.string.novel_saved_tooltip));
+
+					Intent intent = new Intent(Intent.ACTION_VIEW);
+					Uri uri = Uri.fromFile(new File(downDirPath + filename));
+					intent.setDataAndType(uri, "text/plain");
+					String ticker = filename + " " + getString(R.string.novel_saved_tooltip);
+
+					NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(MainActivity.this)
+							.setContentTitle(getString(R.string.app_name)).setContentText(downDirPath + filename)
+							.setTicker(ticker).setSmallIcon(android.R.drawable.stat_sys_download_done)
+							.setAutoCancel(true);
+					PendingIntent contentIntent = PendingIntent.getActivity(MainActivity.this, 0, intent, 0);
+					mBuilder.setContentIntent(contentIntent);
+					mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+					mNotificationManager.notify(0, mBuilder.build());
+
+					break;
+				case PREPARING:
+					pbDownload.setVisibility(View.GONE);
+					tvDownloadStatus.setVisibility(View.GONE);
+					progressDialog = ProgressDialog.show(MainActivity.this,
+							getResources().getString(R.string.progress_dialog_title),
+							getResources().getString(R.string.progress_dialog_msg));
+					break;
+				case FAIL:
+					if (progressDialog.isShowing())
+						progressDialog.dismiss();
+					Toast.makeText(getApplicationContext(), R.string.download_fail_tooltip, Toast.LENGTH_SHORT).show();
+					tvStatus.setText(R.string.download_fail_msg);
+					break;
 			}
 		}
 	};
@@ -272,52 +293,52 @@ public class MainActivity extends Activity {
 	@SuppressLint("SetJavaScriptEnabled")
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.menu_search:
-			LayoutInflater factory = LayoutInflater.from(this);
-			final View deleteDialogView = factory.inflate(R.layout.search_dialog, null);
-			final AlertDialog searchDialog = new AlertDialog.Builder(this).setTitle(R.string.search)
-					.setNegativeButton(R.string.close_btn, null).create();
-			searchDialog.setView(deleteDialogView);
+			case R.id.menu_search:
+				LayoutInflater factory = LayoutInflater.from(this);
+				final View deleteDialogView = factory.inflate(R.layout.search_dialog, null);
+				final AlertDialog searchDialog = new AlertDialog.Builder(this).setTitle(R.string.search)
+						.setNegativeButton(R.string.close_btn, null).create();
+				searchDialog.setView(deleteDialogView);
 
-			final WebView wv = (WebView) deleteDialogView.findViewById(R.id.wv_something);
-			wv.getSettings().setJavaScriptEnabled(true);
-			wv.loadUrl("https://googledrive.com/host/0By9mvBCbgqrycV9naFJSYm5mbjQ");
-			wv.setWebViewClient(new WebViewClient() {
-				@Override
-				public boolean shouldOverrideUrlLoading(WebView view, String url) {
-					view.loadUrl(url);
-					return true;
-				}
-			});
-			wv.setOnKeyListener(new OnKeyListener() {
-				@Override
-				public boolean onKey(View v, int keyCode, KeyEvent event) {
-					if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-						if (wv.canGoBack()) {
-							wv.goBack();
-						} else {
-							searchDialog.dismiss();
-						}
+				final WebView wv = (WebView) deleteDialogView.findViewById(R.id.wv_something);
+				wv.getSettings().setJavaScriptEnabled(true);
+				wv.loadUrl("https://googledrive.com/host/0By9mvBCbgqrycV9naFJSYm5mbjQ");
+				wv.setWebViewClient(new WebViewClient() {
+					@Override
+					public boolean shouldOverrideUrlLoading(WebView view, String url) {
+						view.loadUrl(url);
 						return true;
 					}
-					return false;
-				}
-			});
+				});
+				wv.setOnKeyListener(new OnKeyListener() {
+					@Override
+					public boolean onKey(View v, int keyCode, KeyEvent event) {
+						if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+							if (wv.canGoBack()) {
+								wv.goBack();
+							} else {
+								searchDialog.dismiss();
+							}
+							return true;
+						}
+						return false;
+					}
+				});
 
-			searchDialog.show();
-			break;
-		case R.id.menu_settings:
-			if (Build.VERSION.SDK_INT < 11) {
-				startActivity(new Intent(this, GingerbreadPrefsActivity.class));
-			} else {
-				startActivity(new Intent(this, PrefsActivity.class));
-			}
-			break;
-		case R.id.menu_quit:
-			finish();
-			break;
-		default:
-			break;
+				searchDialog.show();
+				break;
+			case R.id.menu_settings:
+				if (Build.VERSION.SDK_INT < 11) {
+					startActivity(new Intent(this, GingerbreadPrefsActivity.class));
+				} else {
+					startActivity(new Intent(this, PrefsActivity.class));
+				}
+				break;
+			case R.id.menu_quit:
+				finish();
+				break;
+			default:
+				break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
