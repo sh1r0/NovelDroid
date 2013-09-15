@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -22,12 +23,24 @@ public class GingerbreadPrefsActivity extends PreferenceActivity implements OnSh
 	private Preference about;
 	private int namingRulePref;
 	private SharedPreferences prefs;
+	private String version;
+	private String message;
 
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.settings);
+
+		try {
+			version = getApplicationContext().getPackageManager().getPackageInfo(
+					getApplicationContext().getPackageName(), 0).versionName;
+		} catch (NameNotFoundException e) {
+			e.printStackTrace();
+		}
+		message = getString(R.string.version_tag) + version + "\n" + getString(R.string.author_tag)
+				+ getString(R.string.author_name);
+
 		namingRuleList = this.getResources().getStringArray(R.array.naming_rule);
 
 		encoding = findPreference(KEY_ENCODING);
@@ -57,7 +70,7 @@ public class GingerbreadPrefsActivity extends PreferenceActivity implements OnSh
 				AlertDialog.Builder dialog = new AlertDialog.Builder(GingerbreadPrefsActivity.this);
 				dialog.setIcon(android.R.drawable.ic_dialog_info);
 				dialog.setTitle(R.string.about);
-				dialog.setMessage(R.string.author_info);
+				dialog.setMessage(message);
 				dialog.setCancelable(false);
 				dialog.setPositiveButton(R.string.ok_btn, new DialogInterface.OnClickListener() {
 					@Override

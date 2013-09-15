@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
@@ -32,11 +33,22 @@ public class PrefsActivity extends PreferenceActivity {
 		private Preference about;
 		private int namingRulePref;
 		private SharedPreferences prefs;
+		private String version;
+		private String message;
 
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
 			addPreferencesFromResource(R.xml.settings);
+
+			try {
+				version = getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0).versionName;
+			} catch (NameNotFoundException e) {
+				e.printStackTrace();
+			}
+			message = getString(R.string.version_tag) + version + "\n" + getString(R.string.author_tag)
+					+ getString(R.string.author_name);
+
 			namingRuleList = this.getResources().getStringArray(R.array.naming_rule);
 
 			encoding = findPreference(KEY_ENCODING);
@@ -50,7 +62,7 @@ public class PrefsActivity extends PreferenceActivity {
 							new DirectoryChooserDialog.ChosenDirectoryListener() {
 								@Override
 								public void onChosenDir(String chosenDir) {
-									downDir.getEditor().putString(KEY_DOWN_DIR, chosenDir+"/").commit();
+									downDir.getEditor().putString(KEY_DOWN_DIR, chosenDir + "/").commit();
 								}
 							});
 					directoryChooserDialog.setNewFolderEnabled(true);
@@ -66,7 +78,7 @@ public class PrefsActivity extends PreferenceActivity {
 					AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
 					dialog.setIcon(android.R.drawable.ic_dialog_info);
 					dialog.setTitle(R.string.about);
-					dialog.setMessage(R.string.author_info);
+					dialog.setMessage(message);
 					dialog.setCancelable(false);
 					dialog.setPositiveButton(R.string.ok_btn, new DialogInterface.OnClickListener() {
 						@Override
@@ -77,7 +89,7 @@ public class PrefsActivity extends PreferenceActivity {
 					return true;
 				}
 			});
-			
+
 			prefs = getPreferenceManager().getSharedPreferences();
 		}
 

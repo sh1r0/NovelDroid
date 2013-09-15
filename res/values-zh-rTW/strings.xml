@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">NovelDroid</string>
     <string name="menu_quit">關閉</string>
     <string name="id_hint">小說ID</string>
     <string name="novel_name">小說名稱</string>
@@ -27,7 +26,8 @@
     <string name="novel_saved_tooltip">下載完成</string>
     <string name="progress_dialog_title">請稍候</string>
     <string name="progress_dialog_msg">處理中\u2026</string>
-    <string name="author_info">作者: sh1r0</string>
+    <string name="author_tag">作者：</string>
+    <string name="version_tag">版本：</string>
     <string name="search">搜尋</string>
     <string name="settings">設定</string>
     <string name="about">關於</string>
