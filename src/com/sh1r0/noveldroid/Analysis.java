@@ -54,7 +54,7 @@ class Ck101Analyzer extends AsyncTask<NovelInfo, Integer, NovelInfo> {
     				end = line.indexOf("</title>");
     				line = line.substring(start, end);
 
-    				regex = "([\\[【「（《].+[\\]】」）》])?\\s*[【《]?\\s*([\\S&&[^】》]]+).*作者[】:：︰ ]*([\\S&&[^(（《﹝【]]+)";
+    				regex = "([\\[【「（《［].+[\\]】」）》］])?\\s*[【《\\[]?\\s*([\\S&&[^】》]]+).*作者[】:：︰ ]*([\\S&&[^(（《﹝【]]+)";
     				p = Pattern.compile(regex);
     				matcher = p.matcher(line);
     				if (matcher.find()) {
