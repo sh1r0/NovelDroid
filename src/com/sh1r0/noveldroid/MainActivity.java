@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -23,30 +24,36 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.view.Display;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends Activity {
+import com.slidingmenu.lib.SlidingMenu;
+
+public class MainActivity extends Activity implements OnItemClickListener {
 	private static final int SUCCESS = 0x10000;
 	private static final int PREPARING = 0x10001;
 	private static final int FAIL = 0x10002;
-
+	
+	private final int API_VERSION = Build.VERSION.SDK_INT;
+	private int width;
 	private EditText etID;
 	private EditText etNovelName;
 	private EditText etAuthor;
@@ -65,13 +72,18 @@ public class MainActivity extends Activity {
 	private String downDirPath;
 	private String encoding;
 	private NotificationManager mNotificationManager;
+	private ListView slidingMenuItemList;
+	private SlidingMenu slidingMenu;
 
 	@SuppressLint("SetJavaScriptEnabled")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
+		
+		width = getScreenWidth();
+		PreferenceManager.setDefaultValues(this, R.xml.settings, false);
+		
 		etID = (EditText) findViewById(R.id.et_id);
 		etNovelName = (EditText) findViewById(R.id.et_novel_name);
 		etAuthor = (EditText) findViewById(R.id.et_author);
@@ -84,12 +96,10 @@ public class MainActivity extends Activity {
 		spnDomain = (Spinner) findViewById(R.id.spn_doamin);
 		pbDownload = (ProgressBar) findViewById(R.id.progressbar);
 
-		PreferenceManager.setDefaultValues(this, R.xml.settings, false);
-
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, this
+		ArrayAdapter<String> spnAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, this
 				.getResources().getStringArray(R.array.domain));
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		spnDomain.setAdapter(adapter);
+		spnAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spnDomain.setAdapter(spnAdapter);
 		spnDomain.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
@@ -219,6 +229,20 @@ public class MainActivity extends Activity {
 				}).start();
 			}
 		});
+		
+		slidingMenu = new SlidingMenu(this);
+		slidingMenu.setMode(SlidingMenu.RIGHT);
+		slidingMenu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+		slidingMenu.setShadowWidthRes(R.dimen.shadow_width);
+		slidingMenu.setShadowDrawable(R.drawable.shadow);
+		slidingMenu.setBehindOffsetRes(R.dimen.slidingmenu_offset);
+		slidingMenu.setFadeDegree(0.35f);
+		slidingMenu.attachToActivity(this, SlidingMenu.SLIDING_WINDOW);
+		slidingMenu.setMenu(R.layout.sliding_menu);
+		slidingMenuItemList = (ListView) findViewById(R.id.sliding_menu);
+		slidingMenuItemList.setAdapter(new ArrayAdapter<String>(this, R.layout.sliding_menu_item,
+				R.id.tv_item, this.getResources().getStringArray(R.array.menu_item)));
+		slidingMenuItemList.setOnItemClickListener(this);
 	}
 
 	@SuppressLint("HandlerLeak")
@@ -285,22 +309,24 @@ public class MainActivity extends Activity {
 	};
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
+	protected void onResume() {
+		prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		super.onResume();
 	}
-
+	
 	@SuppressLint("SetJavaScriptEnabled")
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case R.id.menu_search:
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		slidingMenu.toggle(false);
+		switch (position) {
+			case 0: // search
 				LayoutInflater factory = LayoutInflater.from(this);
-				final View deleteDialogView = factory.inflate(R.layout.search_dialog, null);
+				final View searchDialogView = factory.inflate(R.layout.search_dialog, null);
 				final AlertDialog searchDialog = new AlertDialog.Builder(this).setTitle(R.string.search)
-						.setNegativeButton(R.string.close_btn, null).create();
-				searchDialog.setView(deleteDialogView);
+						.setNegativeButton(R.string.close_btn, null).setCancelable(false).create();
+				searchDialog.setView(searchDialogView);
 
-				final WebView wv = (WebView) deleteDialogView.findViewById(R.id.wv_something);
+				final WebView wv = (WebView) searchDialogView.findViewById(R.id.wv_something);
 				wv.getSettings().setJavaScriptEnabled(true);
 				wv.loadUrl("https://googledrive.com/host/0By9mvBCbgqrycV9naFJSYm5mbjQ");
 				wv.setWebViewClient(new WebViewClient() {
@@ -326,27 +352,33 @@ public class MainActivity extends Activity {
 				});
 
 				searchDialog.show();
+				WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+				lp.copyFrom(searchDialog.getWindow().getAttributes());
+				lp.width = width;
+				searchDialog.getWindow().setAttributes(lp);
 				break;
-			case R.id.menu_settings:
-				if (Build.VERSION.SDK_INT < 11) {
-					startActivity(new Intent(this, GingerbreadPrefsActivity.class));
-				} else {
+			case 1: // settings
+				if (API_VERSION >= 11) {
 					startActivity(new Intent(this, PrefsActivity.class));
+				} else {
+					startActivity(new Intent(this, GingerbreadPrefsActivity.class));
 				}
 				break;
-			case R.id.menu_quit:
+			case 2: // exit
 				finish();
 				break;
 			default:
 				break;
 		}
-		return super.onOptionsItemSelected(item);
 	}
-
+	
 	@Override
-	protected void onResume() {
-		prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		super.onResume();
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+	    if (keyCode == KeyEvent.KEYCODE_MENU) {
+	        slidingMenu.toggle();
+	        return true;
+	    }
+	    return super.onKeyDown(keyCode, event);
 	}
 
 	private boolean isNetworkConnected() {
@@ -358,5 +390,19 @@ public class MainActivity extends Activity {
 	private void closeKeypad() {
 		InputMethodManager inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+	}
+	
+	@SuppressWarnings("deprecation")
+	@SuppressLint("NewApi")
+	private int getScreenWidth() {
+		Display display = getWindowManager().getDefaultDisplay();
+		if (API_VERSION >= 13) {
+		    Point size = new Point();
+		    display.getSize(size);
+		    width = size.x;
+		} else {
+		    width = display.getWidth();
+		}
+		return width;
 	}
 }

@@ -138,7 +138,8 @@
         android:layout_below="@id/btn_download"
         android:layout_marginTop="50dp"
         android:max="100"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:keepScreenOn="true" />
 
     <TextView
         android:id="@+id/tv_dl_status"

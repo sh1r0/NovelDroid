@@ -21,4 +21,10 @@
 		<item>1</item>
 		<item>2</item>
 	</string-array>
+	
+    <string-array name="menu_item">
+		<item>Search</item>
+		<item>Settings</item>
+		<item>Exit</item>
+	</string-array>
 </resources>
