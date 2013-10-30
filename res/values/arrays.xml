@@ -1,30 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="domain">
-		<item>ck101</item>
-		<item>eyny</item>
-	</string-array>
+        <item>ck101</item>
+        <item>eyny</item>
+    </string-array>
     
     <string-array name="encoding">
-		<item>UTF-8</item>
-		<item>UTF-16LE</item>
-	</string-array>
-	
+        <item>UTF-8</item>
+        <item>UTF-16LE</item>
+    </string-array>
+    
     <string-array name="naming_rule">
-		<item>BookName</item>
-		<item>BookName_Author</item>
-		<item>Author_BookName</item>
-	</string-array>
-	
+        <item>BookName</item>
+        <item>BookName_Author</item>
+        <item>Author_BookName</item>
+    </string-array>
+    
     <string-array name="naming_rule_value">
-		<item>0</item>
-		<item>1</item>
-		<item>2</item>
-	</string-array>
-	
-    <string-array name="menu_item">
-		<item>Search</item>
-		<item>Settings</item>
-		<item>Exit</item>
-	</string-array>
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
 </resources>

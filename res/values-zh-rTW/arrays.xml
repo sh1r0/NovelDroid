@@ -5,10 +5,4 @@
 		<item>書名_作者</item>
 		<item>作者_書名</item>
 	</string-array>
-	
-    <string-array name="menu_item">
-		<item>搜尋</item>
-		<item>設定</item>
-		<item>關閉</item>
-	</string-array>
 </resources>

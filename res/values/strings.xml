@@ -3,7 +3,7 @@
 
     <string name="app_name">NovelDroid</string>
     <string name="author_name">sh1r0</string>
-    <string name="menu_quit">Quit</string>
+    <string name="quit">Quit</string>
     <string name="id_hint">Novel ID</string>
     <string name="novel_name">Novel Name</string>
     <string name="author">Author</string>

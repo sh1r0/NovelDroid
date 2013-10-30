@@ -71,7 +71,9 @@ public class DirectoryChooserDialog {
 	// //////////////////////////////////////////////////////////////////////////////
 	public void chooseDirectory(String dir) {
 		File dirFile = new File(dir);
-		if (!dirFile.exists() || !dirFile.isDirectory()) {
+		if (!dirFile.exists()) {
+			dirFile.mkdirs();
+		} else if (!dirFile.isDirectory()) {
 			dir = m_sdcardDirectory;
 		}
 

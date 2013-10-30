@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="menu_quit">關閉</string>
+    <string name="quit">關閉</string>
     <string name="id_hint">小說ID</string>
     <string name="novel_name">小說名稱</string>
     <string name="author">作者</string>
