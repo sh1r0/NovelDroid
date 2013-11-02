@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
+import android.annotation.TargetApi;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Log;
@@ -23,6 +24,7 @@ public class BookWriter {
 		this.author = novelInfo.author;
 	}
 
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	public String makeBook(String downDirPath, int namingRule, String encoding) throws IOException {
 		File downDir = new File(downDirPath);
 		if (!downDir.exists()) {
@@ -53,19 +55,19 @@ public class BookWriter {
 		AbstractParser[] parsers = new AbstractParser[Config.threadNum];
 		Class<?> parserClass = null;
 		try {
-			parserClass = Site.parserClasses[domainID];
+			parserClass = Class.forName(Site.PARSER_CLASS_NAME[domainID]);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		if (Build.VERSION.SDK_INT < 11) {
+		if (Build.VERSION.SDK_INT >= 11) {
 			for (int i = 0; i < Config.threadNum; i++) {
 				try {
 					parsers[i] = (AbstractParser) parserClass.newInstance();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				parsers[i].execute(fileName[i]);
+				parsers[i].executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, fileName[i]);
 			}
 		} else {
 			for (int i = 0; i < Config.threadNum; i++) {
@@ -74,7 +76,7 @@ public class BookWriter {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				parsers[i].executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, fileName[i]);
+				parsers[i].execute(fileName[i]);
 			}
 		}
 

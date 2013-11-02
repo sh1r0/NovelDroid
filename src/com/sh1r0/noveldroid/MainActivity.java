@@ -85,7 +85,6 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 	private ListView mDrawerList;
 	private ActionBarDrawerToggle mDrawerToggle;
 
-	@SuppressLint("SetJavaScriptEnabled")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
