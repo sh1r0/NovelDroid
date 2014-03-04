@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -140,6 +141,7 @@ public class DirectoryChooserDialog {
 		return false;
 	}
 
+	@SuppressLint("DefaultLocale")
 	private List<String> getDirectories(String dir) {
 		List<String> dirs = new ArrayList<String>();
 

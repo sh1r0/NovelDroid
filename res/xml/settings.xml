@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <ListPreference 
+    <ListPreference
+        android:icon="@drawable/ic_action_edit"
         android:title="@string/encoding"
         android:key="encoding"
         android:entries="@array/encoding"
@@ -11,6 +12,7 @@
         />
     
     <ListPreference
+        android:icon="@drawable/ic_action_keyboard"
         android:title="@string/filename_rule"
         android:key="naming_rule"
         android:entries="@array/naming_rule"
@@ -20,11 +22,19 @@
         />
     
     <Preference
+        android:icon="@drawable/ic_action_collection"
         android:title="@string/download_folder"
         android:key="down_dir"
     	/>
     
-	<Preference 
+    <Preference
+        android:icon="@drawable/ic_action_refresh"
+	    android:title="@string/check_update"
+	    android:key="check_update"
+	    />
+    
+	<Preference
+	    android:icon="@drawable/ic_action_about"
 	    android:title="@string/about"
 	    android:key="about"
 	    />

@@ -1,8 +1,9 @@
 package com.sh1r0.noveldroid;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Field;
+
+import com.sh1r0.noveldroid.downloader.AbstractDownloader;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -74,16 +75,16 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 	private TextView tvDownloadStatus;
 	private Spinner spnDomain;
 	private ProgressBar pbDownload;
-	private NovelInfo novelInfo;
 	private ProgressDialog progressDialog;
 	private SharedPreferences prefs;
 	private String filename;
 	private String downDirPath;
-	private String encoding;
 	private NotificationManager mNotificationManager;
 	private DrawerLayout mDrawerLayout;
 	private ListView mDrawerList;
 	private ActionBarDrawerToggle mDrawerToggle;
+	private Novel novel;
+	private AbstractDownloader novelDownloader;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -105,19 +106,11 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 		spnDomain = (Spinner) findViewById(R.id.spn_doamin);
 		pbDownload = (ProgressBar) findViewById(R.id.progressbar);
 
-		ArrayAdapter<String> spnAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, this
-				.getResources().getStringArray(R.array.domain));
+		ArrayAdapter<String> spnAdapter = new ArrayAdapter<String>(this,
+				android.R.layout.simple_spinner_item, this.getResources().getStringArray(
+						R.array.domain));
 		spnAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spnDomain.setAdapter(spnAdapter);
-		spnDomain.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> adapterView) {
-			}
-		});
 
 		btnAnalyze.setOnClickListener(new OnClickListener() {
 			@Override
@@ -126,35 +119,36 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 				btnDownload.setEnabled(false);
 
 				if (!isNetworkConnected()) {
-					Toast.makeText(getApplicationContext(), R.string.no_connection_tooltip, Toast.LENGTH_SHORT).show();
+					Toast.makeText(getApplicationContext(), R.string.no_connection_tooltip,
+							Toast.LENGTH_SHORT).show();
 					return;
 				}
 
 				String tid = etID.getText().toString();
 				if (tid.isEmpty()) {
-					Toast.makeText(getApplicationContext(), R.string.novel_id_tooltip, Toast.LENGTH_SHORT).show();
+					etID.setError(getResources().getString(R.string.novel_id_tooltip));
 					return;
 				}
 
 				try {
-					novelInfo = Analysis.analysisUrl(spnDomain.getSelectedItemPosition(), tid);
+					novelDownloader = DownloaderFactory.getDownloader(spnDomain
+							.getSelectedItemPosition());
+					if ((novel = novelDownloader.analyze(tid)) == null) {
+						throw new Exception();
+					}
 				} catch (Exception e) {
 					String err = (e.getMessage() == null) ? "analysis fail" : e.getMessage();
 					Log.e("Error", err);
 					return;
 				}
 
-				if (novelInfo == null || novelInfo.wrongUrl) {
-					Log.e("Error", "Wrong URL");
-					return;
-				}
+				etAuthor.setText(novel.author);
+				etNovelName.setText(novel.name);
+				etFromPage.setText(String.valueOf(novel.fromPage));
+				etToPage.setText(String.valueOf(novel.toPage));
 
-				etAuthor.setText(novelInfo.author);
-				etNovelName.setText(novelInfo.name);
-				etFromPage.setText("1");
-				etToPage.setText(String.valueOf(novelInfo.lastPage));
-
-				Toast.makeText(getApplicationContext(), R.string.analysis_done_tooltip, Toast.LENGTH_SHORT).show();
+				Toast.makeText(getApplicationContext(), R.string.analysis_done_tooltip,
+						Toast.LENGTH_SHORT).show();
 				btnDownload.setEnabled(true);
 			}
 		});
@@ -162,73 +156,70 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 		btnDownload.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				novelInfo.name = etNovelName.getText().toString();
-				novelInfo.author = etAuthor.getText().toString();
-				novelInfo.fromPage = Integer.parseInt(etFromPage.getText().toString());
-				novelInfo.toPage = Integer.parseInt(etToPage.getText().toString());
+				novel.name = etNovelName.getText().toString();
+				novel.author = etAuthor.getText().toString();
 
-				if (novelInfo.name.isEmpty()) {
+				if (novel.name.isEmpty()) {
 					AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
 					dialog.setIcon(android.R.drawable.ic_dialog_alert);
 					dialog.setTitle(R.string.error_dialog_title);
 					dialog.setMessage(R.string.empty_name_dialog_msg);
 					dialog.setCancelable(false);
-					dialog.setPositiveButton(R.string.ok_btn, new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-						}
-					});
+					dialog.setPositiveButton(R.string.ok_btn,
+							new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+								}
+							});
 					dialog.show();
 					return;
 				}
 
-				if (novelInfo.fromPage < 1 || novelInfo.fromPage > novelInfo.toPage
-						|| novelInfo.toPage > novelInfo.lastPage) {
+				try {
+					novel.fromPage = Integer.parseInt(etFromPage.getText().toString());
+					novel.toPage = Integer.parseInt(etToPage.getText().toString());
+					if (novel.fromPage < 1 || novel.fromPage > novel.toPage
+							|| novel.toPage > novel.lastPage) {
+						throw new NumberFormatException();
+					}
+				} catch (NumberFormatException e) {
 					AlertDialog.Builder dialog = new AlertDialog.Builder(MainActivity.this);
 					dialog.setIcon(android.R.drawable.ic_dialog_alert);
 					dialog.setTitle(R.string.error_dialog_title);
 					dialog.setMessage(R.string.wrong_page_dialog_msg);
 					dialog.setCancelable(false);
-					dialog.setPositiveButton(R.string.ok_btn, new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-						}
-					});
+					dialog.setPositiveButton(R.string.ok_btn,
+							new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+								}
+							});
 					dialog.show();
 					return;
 				}
 
-				File tempDir = new File(Config.tempDir);
+				File tempDir = new File(NovelUtils.TEMP_DIR);
 				if (!tempDir.exists()) {
 					tempDir.mkdirs();
 				}
 
-				pbDownload.setProgress(0);
-				pbDownload.setVisibility(View.VISIBLE);
-				tvDownloadStatus.setVisibility(View.VISIBLE);
 				tvStatus.setText(R.string.downloading_tooltip);
 
 				new Thread(new Runnable() {
-					@Override
 					public void run() {
-						Downloader downloader = new Downloader(novelInfo);
-						BookWriter bookWriter = new BookWriter(novelInfo);
 						try {
-							if (!downloader.startDownload(bookWriter, progressHandler)) {
-								throw new IOException();
-							} else {
-								mHandler.sendEmptyMessage(PREPARING);
-								encoding = prefs.getString("encoding", "UTF-8");
-								downDirPath = prefs.getString("down_dir", Config.appDir);
-								filename = bookWriter.makeBook(downDirPath,
-										Integer.parseInt(prefs.getString("naming_rule", "0")), encoding);
-								if (filename == null) {
-									throw new IOException();
-								} else {
-									mHandler.sendEmptyMessage(SUCCESS);
-								}
+							novelDownloader.download(progressHandler);
+
+							downDirPath = prefs.getString("down_dir", NovelUtils.APP_DIR);
+							mHandler.sendEmptyMessage(PREPARING);
+							filename = novelDownloader.process(downDirPath,
+									Integer.parseInt(prefs.getString("naming_rule", "0")),
+									prefs.getString("encoding", "UTF-8"));
+							if (filename == null) {
+								throw new Exception();
 							}
-						} catch (IOException e) {
+							mHandler.sendEmptyMessage(SUCCESS);
+						} catch (Exception e) {
 							e.printStackTrace();
 							mHandler.sendEmptyMessage(FAIL);
 						}
@@ -343,20 +334,23 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 			switch (msg.what) {
 				case SUCCESS:
 					progressDialog.dismiss();
-					Toast.makeText(getApplicationContext(), R.string.download_success_tooltip, Toast.LENGTH_LONG)
-							.show();
-					tvStatus.setText(filename + " " + getResources().getString(R.string.novel_saved_tooltip));
+					Toast.makeText(getApplicationContext(), R.string.download_success_tooltip,
+							Toast.LENGTH_LONG).show();
+					tvStatus.setText(filename + " "
+							+ getResources().getString(R.string.novel_saved_tooltip));
 
 					Intent intent = new Intent(Intent.ACTION_VIEW);
 					Uri uri = Uri.fromFile(new File(downDirPath + filename));
 					intent.setDataAndType(uri, "text/plain");
 					String ticker = filename + " " + getString(R.string.novel_saved_tooltip);
 
-					NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(MainActivity.this)
-							.setContentTitle(getString(R.string.app_name)).setContentText(downDirPath + filename)
-							.setTicker(ticker).setSmallIcon(android.R.drawable.stat_sys_download_done)
+					NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
+							MainActivity.this).setContentTitle(getString(R.string.app_name))
+							.setContentText(downDirPath + filename).setTicker(ticker)
+							.setSmallIcon(android.R.drawable.stat_sys_download_done)
 							.setAutoCancel(true);
-					PendingIntent contentIntent = PendingIntent.getActivity(MainActivity.this, 0, intent, 0);
+					PendingIntent contentIntent = PendingIntent.getActivity(MainActivity.this, 0,
+							intent, 0);
 					mBuilder.setContentIntent(contentIntent);
 					mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 					mNotificationManager.notify(0, mBuilder.build());
@@ -365,14 +359,15 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 				case PREPARING:
 					pbDownload.setVisibility(View.GONE);
 					tvDownloadStatus.setVisibility(View.GONE);
-					progressDialog = ProgressDialog.show(MainActivity.this,
-							getResources().getString(R.string.progress_dialog_title),
+					progressDialog = ProgressDialog.show(MainActivity.this, getResources()
+							.getString(R.string.progress_dialog_title),
 							getResources().getString(R.string.progress_dialog_msg));
 					break;
 				case FAIL:
-					if (progressDialog.isShowing())
+					if (progressDialog != null && progressDialog.isShowing())
 						progressDialog.dismiss();
-					Toast.makeText(getApplicationContext(), R.string.download_fail_tooltip, Toast.LENGTH_SHORT).show();
+					Toast.makeText(getApplicationContext(), R.string.download_fail_tooltip,
+							Toast.LENGTH_SHORT).show();
 					tvStatus.setText(R.string.download_fail_msg);
 					break;
 			}
@@ -383,19 +378,24 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 	public Handler progressHandler = new Handler() {
 		int completeTaskNum;
 		int totalTaskNum;
+		int progress;
 
 		@Override
 		public void handleMessage(Message msg) {
-			if (msg.what == 0x10000) {
+			if (msg.what < 0) {
 				completeTaskNum = 0;
 				totalTaskNum = msg.arg1;
-				tvDownloadStatus.setText(0 + "/" + totalTaskNum);
+				pbDownload.setProgress(0);
+				tvDownloadStatus.setText(0 + "%");
+				pbDownload.setVisibility(View.VISIBLE);
+				tvDownloadStatus.setVisibility(View.VISIBLE);
 				return;
 			}
 
-			completeTaskNum++;
-			tvDownloadStatus.setText(completeTaskNum + "/" + totalTaskNum);
-			pbDownload.setProgress((int) completeTaskNum * 100 / totalTaskNum);
+			completeTaskNum += msg.what;
+			progress = (int) completeTaskNum * 100 / totalTaskNum;
+			tvDownloadStatus.setText(progress + "%");
+			pbDownload.setProgress(progress);
 		}
 	};
 
@@ -458,7 +458,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 				.setNegativeButton(R.string.close_btn, null).setCancelable(false).create();
 		searchDialog.setView(searchDialogView);
 
-		final WebView wv = (WebView) searchDialogView.findViewById(R.id.wv_something);
+		final WebView wv = (WebView) searchDialogView.findViewById(R.id.wv_search);
 		wv.getSettings().setJavaScriptEnabled(true);
 		wv.loadUrl("https://googledrive.com/host/0By9mvBCbgqrycV9naFJSYm5mbjQ");
 		wv.setWebViewClient(new WebViewClient() {
