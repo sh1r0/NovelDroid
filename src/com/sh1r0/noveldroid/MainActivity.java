@@ -3,8 +3,6 @@ package com.sh1r0.noveldroid;
 import java.io.File;
 import java.lang.reflect.Field;
 
-import com.sh1r0.noveldroid.downloader.AbstractDownloader;
-
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
@@ -24,6 +22,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.NotificationCompat;
@@ -56,6 +55,8 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.sh1r0.noveldroid.downloader.AbstractDownloader;
 
 public class MainActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
 	private static final int SUCCESS = 0x10000;
@@ -206,7 +207,12 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 				tvStatus.setText(R.string.downloading_tooltip);
 
 				new Thread(new Runnable() {
+					@SuppressLint("Wakelock")
 					public void run() {
+						PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+						PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "btnDownload");
+
+						wl.acquire();
 						try {
 							novelDownloader.download(progressHandler);
 
@@ -223,6 +229,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 							e.printStackTrace();
 							mHandler.sendEmptyMessage(FAIL);
 						}
+						wl.release();
 					}
 				}).start();
 			}
