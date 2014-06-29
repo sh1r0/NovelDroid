@@ -3,9 +3,13 @@ NovelDroid
 An android app for extracting novel contents from forum posts
 
 ##Latest Version
-1.4.0
+1.4.1
 
 ##Changelog
+
+###1.4.1
+* acquire wakelock during post-processing
+* fix: cklol html structure changes
 
 ###1.4.0
 * change structure of downloaders

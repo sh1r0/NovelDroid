@@ -314,7 +314,7 @@ public class Ck101Downloader extends AbstractDownloader {
 					while ((line = reader.readLine()) != null) {
 						switch (stage) {
 							case 0:
-								if (line.contains("<div class=\"pbody\">")) {
+								if (line.contains("<div id=\"pbody\" class=\"pbody\">")) {
 									stage = 1;
 								}
 								break;
@@ -326,7 +326,7 @@ public class Ck101Downloader extends AbstractDownloader {
 									bookData.append(line);
 									bookData.append("\r\n");
 								}
-								if (line.contains("<div class=\"mes\">")) {
+								if (line.contains("<div class=\"mes \">")) {
 									stage = 2;
 								}
 								break;
