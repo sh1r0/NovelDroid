@@ -1,5 +1,6 @@
 <android.support.v4.widget.DrawerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -22,38 +23,53 @@
 	            android:id="@+id/spn_doamin"
 	            android:layout_width="0dp"
 	            android:layout_height="wrap_content"
-	            android:layout_weight="0.95" />
-	
-	        <EditText
+	            android:layout_weight="1" />
+
+            <EditText
 	            android:id="@+id/et_id"
 	            android:layout_width="0dp"
 	            android:layout_height="wrap_content"
-	            android:layout_weight="1"
+	            android:layout_weight="2"
 	            android:hint="@string/id_hint"
 	            android:inputType="number" />
-	
-	        <Button
-	            android:id="@+id/btn_analyze"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:text="@string/analyze"
-	            android:textSize="15sp" />
-	    </LinearLayout>
+        </LinearLayout>
+
+        <com.dd.processbutton.iml.ActionProcessButton
+            android:id="@+id/btn_analyze"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/analyze"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            custom:pb_colorComplete="@color/green_complete"
+            custom:pb_colorNormal="@color/blue_normal"
+            custom:pb_colorPressed="@color/blue_pressed"
+            custom:pb_colorProgress="@color/purple_progress"
+            custom:pb_textComplete="@string/success"
+            custom:pb_textProgress="@string/analyzing"
+            custom:pb_textError="@string/error"
+            custom:pb_colorError="@color/red_error"
+            android:layout_below="@+id/id_info"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp" />
 	
 	    <LinearLayout
 	        android:id="@+id/novel_name_info"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
-	        android:layout_below="@id/id_info"
-	        android:orientation="horizontal" >
+            android:orientation="horizontal"
+            android:layout_below="@id/btn_analyze"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true">
 	
 	        <TextView
 	            android:id="@+id/tv_novel_name"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:text="@string/novel_name" />
-	
-	        <EditText
+
+            <EditText
 	            android:id="@+id/et_novel_name"
 	            android:layout_width="0dp"
 	            android:layout_height="wrap_content"
@@ -116,44 +132,22 @@
 	            android:layout_weight="1"
 	            android:inputType="number" />
 	    </LinearLayout>
-	
-	    <TextView
-	        android:id="@+id/tv_status"
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:layout_alignParentBottom="true"
-	        android:gravity="center" />
-	
-	    <Button
-	        android:id="@+id/btn_download"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_below="@id/page_info"
-	        android:layout_centerHorizontal="true"
-	        android:layout_marginTop="20dp"
-	        android:enabled="false"
-	        android:text="@string/download" />
-	
-	    <ProgressBar
-	        android:id="@+id/progressbar"
-	        style="?android:attr/progressBarStyleHorizontal"
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:layout_below="@id/btn_download"
-	        android:layout_marginTop="50dp"
-	        android:max="100"
-	        android:visibility="gone"
-	        android:keepScreenOn="true" />
-	
-	    <TextView
-	        android:id="@+id/tv_dl_status"
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:layout_below="@id/progressbar"
-	        android:gravity="center"
-	        android:visibility="gone" />
-	
-	</RelativeLayout>
+
+        <com.dd.processbutton.iml.SubmitProcessButton
+            android:id="@+id/btn_download"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/download"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:layout_below="@id/page_info"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            custom:pb_textComplete="@string/done"
+            custom:pb_textProgress="@string/downloading_tooltip"
+            custom:pb_colorProgress="@color/holo_red_light"/>
+
+    </RelativeLayout>
 	
 	<ListView
         android:id="@+id/left_drawer"

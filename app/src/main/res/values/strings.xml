@@ -3,6 +3,13 @@
 
     <string name="app_name">NovelDroid</string>
     <string name="author_name">sh1r0</string>
+    <string name="success">Success</string>
+    <string name="done">Done</string>
+    <string name="error">Error</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="close">Close</string>
+
     <string name="quit">Quit</string>
     <string name="id_hint">Novel ID</string>
     <string name="novel_name">Novel Name</string>
@@ -11,19 +18,15 @@
     <string name="from_page">From Page</string>
     <string name="to_page">To Page</string>
     <string name="analyze">Analyze</string>
+    <string name="analyzing">Analyzing\u2026</string>
     <string name="download">Download</string>
-    <string name="no_connection_tooltip">No Network Connection</string>
-    <string name="novel_id_tooltip">Novel ID cannot be blank</string>
-    <string name="analysis_done_tooltip">Analysis Done!</string>
-    <string name="ok_btn">OK</string>
-    <string name="cancel_btn">Cancel</string>
-    <string name="close_btn">Close</string>
-    <string name="error_dialog_title">Error</string>
-    <string name="empty_name_dialog_msg">Novel name field cannot be blank</string>
-    <string name="wrong_page_dialog_msg">Please check page fields again</string>
     <string name="downloading_tooltip">Downloading\u2026</string>
     <string name="download_success_tooltip">Novel Download Success!!</string>
     <string name="download_fail_tooltip">Novel Download Fail :(</string>
+    <string name="no_connection_tooltip">No Network Connection</string>
+    <string name="novel_id_tooltip">Novel ID cannot be blank</string>
+    <string name="empty_name_dialog_msg">Novel name field cannot be blank</string>
+    <string name="wrong_page_dialog_msg">Please check page fields again</string>
     <string name="download_fail_msg">Download failed</string>
     <string name="novel_saved_tooltip">is done</string>
     <string name="progress_dialog_title">Wait</string>

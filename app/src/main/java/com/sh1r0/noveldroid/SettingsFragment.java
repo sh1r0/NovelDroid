@@ -116,7 +116,7 @@ public class SettingsFragment extends PreferenceCompatFragment implements
 
 							if (latestVer.equals("latest")) {
 								dialog.setMessage(R.string.current_is_latest);
-								dialog.setPositiveButton(R.string.ok_btn, new DialogInterface.OnClickListener() {
+								dialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
 									@Override
 									public void onClick(DialogInterface dialog, int which) {
 									}
@@ -125,7 +125,7 @@ public class SettingsFragment extends PreferenceCompatFragment implements
 								String msg = getString(R.string.latest_version) + latestVer + "\n"
 										+ getString(R.string.current_version) + versionName;
 								dialog.setTitle(R.string.found_update).setMessage(msg);
-								dialog.setNegativeButton(R.string.close_btn, new DialogInterface.OnClickListener() {
+								dialog.setNegativeButton(R.string.close, new DialogInterface.OnClickListener() {
 									@Override
 									public void onClick(DialogInterface dialog, int which) {
 									}
@@ -165,7 +165,7 @@ public class SettingsFragment extends PreferenceCompatFragment implements
 				dialog.setTitle(R.string.about);
 				dialog.setMessage(aboutMessage);
 				dialog.setCancelable(false);
-				dialog.setPositiveButton(R.string.ok_btn, new DialogInterface.OnClickListener() {
+				dialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 					}
