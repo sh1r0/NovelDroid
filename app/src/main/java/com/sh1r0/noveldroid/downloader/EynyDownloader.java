@@ -1,5 +1,14 @@
 package com.sh1r0.noveldroid.downloader;
 
+import android.annotation.TargetApi;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Handler;
+import android.os.Message;
+
+import com.sh1r0.noveldroid.Novel;
+import com.sh1r0.noveldroid.NovelUtils;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,15 +22,6 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import android.annotation.TargetApi;
-import android.os.AsyncTask;
-import android.os.Build;
-import android.os.Handler;
-import android.os.Message;
-
-import com.sh1r0.noveldroid.Novel;
-import com.sh1r0.noveldroid.NovelUtils;
 
 public class EynyDownloader extends AbstractDownloader {
 	private static final String URL_PREFIX = "http://www.eyny.com/archiver/tid-";
@@ -181,7 +181,7 @@ public class EynyDownloader extends AbstractDownloader {
 				connection.setRequestProperty("User-Agent", DESKTOP_USER_AGENT);
 				connection.connect();
 				BufferedReader reader = new BufferedReader(new InputStreamReader(
-						connection.getInputStream(), "utf8"));
+					connection.getInputStream(), "utf8"));
 
 				String line = "";
 				String regex = "";
@@ -261,12 +261,12 @@ public class EynyDownloader extends AbstractDownloader {
 
 					connection.setDoOutput(true);
 					connection.setRequestProperty("User-Agent", MOBILE_USER_AGENTS[tid
-							% MOBILE_USER_AGENTS.length]);
+						% MOBILE_USER_AGENTS.length]);
 					connection.connect();
 
 					InputStream inStream = (InputStream) connection.getInputStream();
 					BufferedReader reader = new BufferedReader(new InputStreamReader(inStream,
-							"utf8"));
+						"utf8"));
 					String line = "";
 					while ((line = reader.readLine()) != null) {
 						html.append(line);
@@ -277,7 +277,7 @@ public class EynyDownloader extends AbstractDownloader {
 				}
 				try {
 					OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(
-							tempFilePath), "UTF-8");
+						tempFilePath), "UTF-8");
 					writer.write(html.toString());
 					writer.flush();
 					writer.close();
@@ -300,10 +300,10 @@ public class EynyDownloader extends AbstractDownloader {
 			Pattern pHtmlTag = Pattern.compile("<[^>]+>", Pattern.CASE_INSENSITIVE);
 			Pattern pTitle = Pattern.compile("<h3>(.+)?</h3>");
 			Pattern pModStamp = Pattern
-					.compile(" 本帖最後由 \\S+ 於 \\d{4}-\\d{1,2}-\\d{1,2} \\d{2}:\\d{2} (\\S{2} )?編輯 ");
+				.compile(" 本帖最後由 \\S+ 於 \\d{4}-\\d{1,2}-\\d{1,2} \\d{2}:\\d{2} (\\S{2} )?編輯 ");
 			Matcher matcher;
-			String[] targets = { "&nbsp;", "<br/>", "<br />" };
-			String[] replacements = { "", "\r\n", "\r\n" };
+			String[] targets = {"&nbsp;", "<br/>", "<br />"};
+			String[] replacements = {"", "\r\n", "\r\n"};
 
 			/**
 			 * 0: not in article
@@ -318,7 +318,7 @@ public class EynyDownloader extends AbstractDownloader {
 				stage = 0;
 				try {
 					reader = new BufferedReader(new InputStreamReader(new FileInputStream(
-							tempFilePath), "UTF-8"));
+						tempFilePath), "UTF-8"));
 					while ((line = reader.readLine()) != null) {
 						switch (stage) {
 							case 0:

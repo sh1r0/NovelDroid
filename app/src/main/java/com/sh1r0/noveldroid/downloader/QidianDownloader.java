@@ -1,5 +1,12 @@
 package com.sh1r0.noveldroid.downloader;
 
+import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Message;
+
+import com.sh1r0.noveldroid.Novel;
+import com.sh1r0.noveldroid.NovelUtils;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,13 +19,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import android.os.AsyncTask;
-import android.os.Handler;
-import android.os.Message;
-
-import com.sh1r0.noveldroid.Novel;
-import com.sh1r0.noveldroid.NovelUtils;
 
 public class QidianDownloader extends AbstractDownloader {
 	private static QidianDownloader downloader;
@@ -72,7 +72,7 @@ public class QidianDownloader extends AbstractDownloader {
 		OutputStreamWriter writer = null;
 		try {
 			reader = new BufferedReader(new InputStreamReader(new FileInputStream(
-					NovelUtils.TEMP_DIR + novel.id + ".txt"), "GBK"));
+				NovelUtils.TEMP_DIR + novel.id + ".txt"), "GBK"));
 			writer = NovelUtils.newNovelWriter(downDirPath + outputFileName, encoding);
 
 			NovelUtils novelUtils = NovelUtils.getInstance();
@@ -110,7 +110,7 @@ public class QidianDownloader extends AbstractDownloader {
 			try {
 				URL url = new URL("http://m.qidian.com.tw/books/" + novel.id);
 				BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream(),
-						"utf8"));
+					"utf8"));
 
 				String line = "";
 				String regex = "(\\S+)\\((\\S+)\\):";

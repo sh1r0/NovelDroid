@@ -1,5 +1,7 @@
 package com.sh1r0.noveldroid;
 
+import android.os.Environment;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -10,12 +12,9 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import android.os.Environment;
-
 public class NovelUtils {
 	public static final int MAX_THREAD_NUM = 4;
-	public static final String APP_DIR = Environment.getExternalStorageDirectory()
-			.getAbsolutePath() + "/NovelDroid/";
+	public static final String APP_DIR = Environment.getExternalStorageDirectory().getAbsolutePath() + "/NovelDroid/";
 	public static final String TEMP_DIR = APP_DIR + "temp/";
 	private static NovelUtils novelUtils;
 
@@ -24,8 +23,7 @@ public class NovelUtils {
 	private NovelUtils() {
 		S2T_MAP = new HashMap<Character, Character>();
 		try {
-			InputStream input = ApplicationContextProvider.getContext().getAssets()
-					.open("table_s2t.txt");
+			InputStream input = ApplicationContextProvider.getContext().getAssets().open("table_s2t.txt");
 			byte[] buffer = new byte[input.available()];
 			input.read(buffer);
 			input.close();

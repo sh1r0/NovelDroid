@@ -1,8 +1,5 @@
 package com.sh1r0.noveldroid;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -21,6 +18,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 
 public class PreferenceCompatFragment extends Fragment {
 	private static final int FIRST_REQUEST_CODE = 100;
@@ -68,13 +68,13 @@ public class PreferenceCompatFragment extends Fragment {
 			View listView = view.findViewById(android.R.id.list);
 			if (!(listView instanceof ListView)) {
 				throw new RuntimeException(
-						"Content has view with id attribute 'android.R.id.list' that is not a ListView class");
+					"Content has view with id attribute 'android.R.id.list' that is not a ListView class");
 			}
 
 			mList = (ListView) listView;
 			if (mList == null) {
 				throw new RuntimeException(
-						"Your content must have a ListView whose id attribute is 'android.R.id.list'");
+					"Your content must have a ListView whose id attribute is 'android.R.id.list'");
 			}
 
 			mHandler.post(mRequestFocus);
@@ -188,12 +188,14 @@ public class PreferenceCompatFragment extends Fragment {
 		dispatchActivityStop();
 	}
 
-	/** Access methods with visibility private **/
+	/**
+	 * Access methods with visibility private *
+	 */
 
 	private PreferenceManager createPreferenceManager() {
 		try {
 			Constructor<PreferenceManager> c = PreferenceManager.class
-					.getDeclaredConstructor(Activity.class, int.class);
+				.getDeclaredConstructor(Activity.class, int.class);
 			c.setAccessible(true);
 			return c.newInstance(this.getActivity(), FIRST_REQUEST_CODE);
 		} catch (Exception e) {
@@ -230,7 +232,7 @@ public class PreferenceCompatFragment extends Fragment {
 	private void dispatchActivityResult(int requestCode, int resultCode, Intent data) {
 		try {
 			Method m = PreferenceManager.class.getDeclaredMethod("dispatchActivityResult", int.class, int.class,
-					Intent.class);
+				Intent.class);
 			m.setAccessible(true);
 			m.invoke(mPreferenceManager, requestCode, resultCode, data);
 		} catch (Exception e) {
@@ -273,7 +275,7 @@ public class PreferenceCompatFragment extends Fragment {
 		PreferenceScreen preferenceScreen;
 		try {
 			Method m = PreferenceManager.class.getDeclaredMethod("inflateFromResource", Context.class, int.class,
-					PreferenceScreen.class);
+				PreferenceScreen.class);
 			m.setAccessible(true);
 			preferenceScreen = (PreferenceScreen) m.invoke(mPreferenceManager, context, resId, rootPreferences);
 		} catch (Exception e) {
@@ -286,7 +288,7 @@ public class PreferenceCompatFragment extends Fragment {
 		PreferenceScreen preferenceScreen;
 		try {
 			Method m = PreferenceManager.class.getDeclaredMethod("inflateFromIntent", Intent.class,
-					PreferenceScreen.class);
+				PreferenceScreen.class);
 			m.setAccessible(true);
 			preferenceScreen = (PreferenceScreen) m.invoke(mPreferenceManager, queryIntent, rootPreferences);
 		} catch (Exception e) {

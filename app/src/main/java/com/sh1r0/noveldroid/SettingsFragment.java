@@ -1,13 +1,5 @@
 package com.sh1r0.noveldroid;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.HashMap;
-
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -29,13 +21,26 @@ import com.parse.Parse;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashMap;
+
+import ru.bartwell.exfilepicker.ExFilePicker;
+import ru.bartwell.exfilepicker.ExFilePickerActivity;
+import ru.bartwell.exfilepicker.ExFilePickerParcelObject;
+
 public class SettingsFragment extends PreferenceCompatFragment implements
-		SharedPreferences.OnSharedPreferenceChangeListener {
+	SharedPreferences.OnSharedPreferenceChangeListener {
 	private static final String KEY_ENCODING = "encoding";
 	private static final String KEY_NAMING_RULE = "naming_rule";
 	private static final String KEY_DOWN_DIR = "down_dir";
 	private static final String KEY_CHECK_UPDATE = "check_update";
 	private static final String KEY_ABOUT = "about";
+	private static final int EX_FILE_PICKER_RESULT = 0;
 
 	private String[] namingRuleList;
 	private Preference encoding;
@@ -64,8 +69,7 @@ public class SettingsFragment extends PreferenceCompatFragment implements
 		} catch (NameNotFoundException e) {
 			e.printStackTrace();
 		}
-		aboutMessage = getString(R.string.version_tag) + versionName + "\n" + getString(R.string.author_tag)
-				+ getString(R.string.author_name);
+		aboutMessage = getString(R.string.version_tag) + versionName + "\n" + getString(R.string.author_tag) + getString(R.string.author_name);
 
 		namingRuleList = this.getResources().getStringArray(R.array.naming_rule);
 
@@ -76,15 +80,12 @@ public class SettingsFragment extends PreferenceCompatFragment implements
 		downDir.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				DirectoryChooserDialog directoryChooserDialog = new DirectoryChooserDialog(getActivity(),
-						new DirectoryChooserDialog.ChosenDirectoryListener() {
-							@Override
-							public void onChosenDir(String chosenDir) {
-								downDir.getEditor().putString(KEY_DOWN_DIR, chosenDir + "/").commit();
-							}
-						});
-				directoryChooserDialog.setNewFolderEnabled(true);
-				directoryChooserDialog.chooseDirectory(prefs.getString(KEY_DOWN_DIR, NovelUtils.APP_DIR));
+				Intent intent = new Intent(ApplicationContextProvider.getContext(), ExFilePickerActivity.class);
+				intent.putExtra(ExFilePicker.SET_ONLY_ONE_ITEM, true);
+				intent.putExtra(ExFilePicker.SET_CHOICE_TYPE, ExFilePicker.CHOICE_TYPE_DIRECTORIES);
+				intent.putExtra(ExFilePicker.SET_START_DIRECTORY, prefs.getString(KEY_DOWN_DIR, NovelUtils.APP_DIR));
+				intent.putExtra(ExFilePicker.DISABLE_SORT_BUTTON, true);
+				startActivityForResult(intent, EX_FILE_PICKER_RESULT);
 				return true;
 			}
 		});
@@ -94,7 +95,7 @@ public class SettingsFragment extends PreferenceCompatFragment implements
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
 				ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(
-						Context.CONNECTIVITY_SERVICE);
+					Context.CONNECTIVITY_SERVICE);
 				NetworkInfo activeNetworkInfo = cm.getActiveNetworkInfo();
 				if (activeNetworkInfo == null || !activeNetworkInfo.isConnectedOrConnecting()) {
 					Toast.makeText(getActivity(), R.string.no_connection_tooltip, Toast.LENGTH_SHORT).show();
@@ -102,7 +103,7 @@ public class SettingsFragment extends PreferenceCompatFragment implements
 				}
 
 				final ProgressDialog progressDialog = ProgressDialog.show(getActivity(),
-						getResources().getString(R.string.check_update), getResources().getString(R.string.checking));
+					getResources().getString(R.string.check_update), getResources().getString(R.string.checking));
 
 				HashMap<String, Object> params = new HashMap<String, Object>();
 				params.put("versionCode", versionCode);
@@ -123,7 +124,7 @@ public class SettingsFragment extends PreferenceCompatFragment implements
 								});
 							} else {
 								String msg = getString(R.string.latest_version) + latestVer + "\n"
-										+ getString(R.string.current_version) + versionName;
+									+ getString(R.string.current_version) + versionName;
 								dialog.setTitle(R.string.found_update).setMessage(msg);
 								dialog.setNegativeButton(R.string.close, new DialogInterface.OnClickListener() {
 									@Override
@@ -134,13 +135,14 @@ public class SettingsFragment extends PreferenceCompatFragment implements
 									public void onClick(DialogInterface dialog, int which) {
 										final DownloadTask downloadTask = new DownloadTask(getActivity());
 										ParseCloud.callFunctionInBackground("getLatestDownloadLink",
-												new HashMap<String, Object>(), new FunctionCallback<String>() {
-													public void done(String link, ParseException e) {
-														if (e == null) {
-															downloadTask.execute(link);
-														}
+											new HashMap<String, Object>(), new FunctionCallback<String>() {
+												public void done(String link, ParseException e) {
+													if (e == null) {
+														downloadTask.execute(link);
 													}
-												});
+												}
+											}
+										);
 									}
 								});
 							}
@@ -190,6 +192,18 @@ public class SettingsFragment extends PreferenceCompatFragment implements
 	public void onPause() {
 		prefs.unregisterOnSharedPreferenceChangeListener(this);
 		super.onPause();
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == EX_FILE_PICKER_RESULT) {
+			if (data != null) {
+				ExFilePickerParcelObject object = data.getParcelableExtra(ExFilePickerParcelObject.class.getCanonicalName());
+				if (object.count > 0) {
+					downDir.getEditor().putString(KEY_DOWN_DIR, object.path + object.names.get(0) + "/").commit();
+				}
+			}
+		}
 	}
 
 	@Override

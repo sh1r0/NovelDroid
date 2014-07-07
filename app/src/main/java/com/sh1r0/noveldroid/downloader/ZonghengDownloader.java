@@ -1,5 +1,12 @@
 package com.sh1r0.noveldroid.downloader;
 
+import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Message;
+
+import com.sh1r0.noveldroid.Novel;
+import com.sh1r0.noveldroid.NovelUtils;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,13 +17,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
-import android.os.AsyncTask;
-import android.os.Handler;
-import android.os.Message;
-
-import com.sh1r0.noveldroid.Novel;
-import com.sh1r0.noveldroid.NovelUtils;
 
 public class ZonghengDownloader extends AbstractDownloader {
 	private static ZonghengDownloader downloader;
@@ -72,7 +72,7 @@ public class ZonghengDownloader extends AbstractDownloader {
 			NovelUtils.unZip(novel.id + ".zip", novel.id + ".txt");
 
 			reader = new BufferedReader(new InputStreamReader(new FileInputStream(
-					NovelUtils.TEMP_DIR + novel.id + ".txt"), "UTF-8"));
+				NovelUtils.TEMP_DIR + novel.id + ".txt"), "UTF-8"));
 			writer = NovelUtils.newNovelWriter(downDirPath + outputFileName, encoding);
 
 			NovelUtils novelUtils = NovelUtils.getInstance();
@@ -114,7 +114,7 @@ public class ZonghengDownloader extends AbstractDownloader {
 			try {
 				URL url = new URL("http://big5.zongheng.com/book/" + novel.id + ".html");
 				BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream(),
-						"utf8"));
+					"utf8"));
 
 				String line = "";
 				int start;

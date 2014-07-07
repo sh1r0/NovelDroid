@@ -66,6 +66,7 @@
     <orderEntry type="library" exported="" name="support-annotations-20.0.0" level="project" />
     <orderEntry type="library" exported="" name="support-v4-20.0.0" level="project" />
     <orderEntry type="library" exported="" name="Parse-1.3.9" level="project" />
+    <orderEntry type="module" module-name="ExFilePicker" exported="" />
   </component>
 </module>
 
