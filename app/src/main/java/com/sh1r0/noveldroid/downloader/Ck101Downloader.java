@@ -326,7 +326,7 @@ public class Ck101Downloader extends AbstractDownloader {
 									bookData.append(line);
 									bookData.append("\r\n");
 								}
-								if (line.contains("<div class=\"mes \">")) {
+								if (line.contains("<div class=\"mes ")) {
 									stage = 2;
 								}
 								break;
@@ -334,8 +334,7 @@ public class Ck101Downloader extends AbstractDownloader {
 								if (line.contains("class=\"postmessage\">")) {
 									stage = 3;
 									if (line.contains("<i class=\"pstatus\">")) { // filter out modified time
-										line = line.replaceAll("<i class=\"pstatus\">[^<>]+ </i>",
-												"");
+										line = line.replaceAll("<i class=\"pstatus\">[^<>]+ </i>", "");
 									}
 									if (line.contains("<div class=\"quote\">")) { // filter out quotes
 										otherTable++;
