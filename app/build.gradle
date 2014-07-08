@@ -1,3 +1,5 @@
+import groovy.swing.SwingBuilder
+
 apply plugin: 'com.android.application'
 
 android {
@@ -12,8 +14,18 @@ android {
         versionName "1.4.1"
     }
 
+    signingConfigs {
+        release {
+            storeFile file('D:/Dropbox/Sync/noveldroid.keystore')
+            storePassword ""
+            keyAlias "release"
+            keyPassword ""
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig signingConfigs.release
             runProguard false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
@@ -26,4 +38,45 @@ dependencies {
     compile files('libs/Parse-1.3.9.jar')
     compile 'com.github.dmytrodanylyk.android-process-button:library:1.0.0'
     compile project(':libs:ExFilePicker')
+}
+
+gradle.taskGraph.whenReady { taskGraph ->
+    if (taskGraph.hasTask(':app:assembleRelease')) {
+        def storepass = ''
+        def keypass = ''
+        if (System.console() == null) {
+            new SwingBuilder().edt {
+                dialog(modal: true, //Otherwise the build will continue running
+                        title: 'Enter password', //Dialog title
+                        alwaysOnTop: true,
+                        resizable: false,
+                        locationRelativeTo: null, //Place dialog in center of the screen
+                        pack: true, //We need to pack the dialog (so it will take the size of its children
+                        show: true
+                ){
+                    vbox { //Put everything below each other
+                        label(text: "Keystore password:")
+                        input1 = passwordField()
+                        label(text: "Key password:")
+                        input2 = passwordField()
+                        button(defaultButton: true, text: 'OK', actionPerformed: {
+                            storepass = new String(input1.password);
+                            keypass = new String(input2.password);
+                            dispose();
+                        })
+                    }
+                }
+            }
+        } else{
+            storepass = new String(System.console().readPassword("\nKeystore password: "))
+            keypass = new String(System.console().readPassword("\nKey password: "))
+        }
+
+        if(storepass.size() <= 0 || keypass.size() <= 0){
+            throw new InvalidUserDataException("You must enter a password to proceed.")
+        }
+
+        android.signingConfigs.release.storePassword = storepass
+        android.signingConfigs.release.keyPassword = keypass
+    }
 }
