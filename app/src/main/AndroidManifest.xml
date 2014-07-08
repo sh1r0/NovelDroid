@@ -44,7 +44,14 @@
             android:name="ru.bartwell.exfilepicker.ExFilePickerActivity"
             android:screenOrientation="portrait"
             android:configChanges="orientation"
-            android:theme="@style/ExFilePickerThemeDark" />
+            android:theme="@style/ExFilePickerThemeLight"
+            android:parentActivityName="com.sh1r0.noveldroid.SettingsActivity" >
+            <!-- Parent activity meta-data to support API level 7+ -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.sh1r0.noveldroid.SettingsActivity" />
+
+        </activity>
     </application>
 
 </manifest>

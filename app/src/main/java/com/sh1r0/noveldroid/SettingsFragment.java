@@ -29,7 +29,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 
-import ru.bartwell.exfilepicker.ExFilePicker;
 import ru.bartwell.exfilepicker.ExFilePickerActivity;
 import ru.bartwell.exfilepicker.ExFilePickerParcelObject;
 
@@ -81,10 +80,7 @@ public class SettingsFragment extends PreferenceCompatFragment implements
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
 				Intent intent = new Intent(ApplicationContextProvider.getContext(), ExFilePickerActivity.class);
-				intent.putExtra(ExFilePicker.SET_ONLY_ONE_ITEM, true);
-				intent.putExtra(ExFilePicker.SET_CHOICE_TYPE, ExFilePicker.CHOICE_TYPE_DIRECTORIES);
-				intent.putExtra(ExFilePicker.SET_START_DIRECTORY, prefs.getString(KEY_DOWN_DIR, NovelUtils.APP_DIR));
-				intent.putExtra(ExFilePicker.DISABLE_SORT_BUTTON, true);
+				intent.putExtra(ExFilePickerActivity.SET_START_DIRECTORY, prefs.getString(KEY_DOWN_DIR, NovelUtils.APP_DIR));
 				startActivityForResult(intent, EX_FILE_PICKER_RESULT);
 				return true;
 			}
