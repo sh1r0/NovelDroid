@@ -9,6 +9,11 @@ import android.os.Message;
 import com.sh1r0.noveldroid.Novel;
 import com.sh1r0.noveldroid.NovelUtils;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,7 +29,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class EynyDownloader extends AbstractDownloader {
-	private static final String URL_PREFIX = "http://www.eyny.com/archiver/tid-";
+	private static final String ARCHIVER_PREFIX = "http://www.eyny.com/archiver/tid-";
+	private static final String THREAD_PREFIX = "http://www.eyny.com/thread-";
 	private static EynyDownloader downloader;
 
 	private Novel novel;
@@ -171,62 +177,35 @@ public class EynyDownloader extends AbstractDownloader {
 		@Override
 		protected Novel doInBackground(Novel... novels) {
 			Novel novel = novels[0];
-			boolean infoFound = false;
-			boolean pageFound = false;
 
 			try {
-				URL url = new URL("http://www.eyny.com/thread-" + novel.id + "-1-1.html");
-				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-				connection.setDoOutput(true);
-				connection.setRequestProperty("User-Agent", DESKTOP_USER_AGENT);
-				connection.connect();
-				BufferedReader reader = new BufferedReader(new InputStreamReader(
-					connection.getInputStream(), "utf8"));
+				Document doc = Jsoup.connect(THREAD_PREFIX + novel.id + "-1-1.html").get();
 
-				String line = "";
-				String regex = "";
-				Matcher matcher;
-				Pattern p;
-				int start, end;
-				while (!(infoFound && pageFound) && (line = reader.readLine()) != null) {
-					if ((start = line.indexOf("<title>")) >= 0) {
-						start += 7;
-						end = line.indexOf("</title>", start);
-						line = line.substring(start, end);
+				String title = doc.title();
+				String regex = "(\\S+)\\s*-\\s*【(\\S+)】";
+				Pattern pattern = Pattern.compile(regex);
+				Matcher matcher = pattern.matcher(title);
+				if (matcher.find()) {
+					novel.name = matcher.group(2);
+					novel.author = matcher.group(1);
+				}
 
-						regex = "(\\S+)\\s*-\\s*【(\\S+)】";
-						p = Pattern.compile(regex);
-						matcher = p.matcher(line);
+				Element pg = doc.select("div.pg").first(); // if the novel has only 1 page, pg is null
+				if (pg != null) {
+					Elements pageLinks = pg.select("a[href]");
+					Element nextPage = pageLinks.select(".nxt").first();
+					Element lastPage = nextPage.previousElementSibling();
+					if (lastPage.hasClass("last")) {
+						regex = "([1-9][0-9]*)$";
+						pattern = Pattern.compile(regex);
+						matcher = pattern.matcher(lastPage.text());
 						if (matcher.find()) {
-							novel.name = matcher.group(2);
-							novel.author = matcher.group(1);
-							infoFound = true;
-						}
-					}
-					if ((start = line.indexOf("<div class=\"pg\">")) >= 0) {
-						end = line.indexOf("class=\"nxt\"", start);
-						if (end <= 0) {
-							pageFound = true; // only 1 page
-							continue;
-						}
-
-						String hyperlinkPrefix = "<a href=\"thread-";
-						end = line.lastIndexOf(hyperlinkPrefix, end) - 1; // the start position of next page link
-						start = line.lastIndexOf(hyperlinkPrefix, end); // the start position of last page link
-						if (start < 0) {
-							throw new IOException("url pattern error!!");
-						}
-
-						regex = hyperlinkPrefix + "\\d+-(\\d+)-\\w+.html\"";
-						p = Pattern.compile(regex);
-						matcher = p.matcher(line);
-						if (matcher.find(start)) {
 							novel.lastPage = Integer.parseInt(matcher.group(1));
-							pageFound = true;
 						}
+					} else {
+						novel.lastPage = Integer.parseInt(lastPage.text());
 					}
 				}
-				reader.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -252,7 +231,7 @@ public class EynyDownloader extends AbstractDownloader {
 		protected Boolean doInBackground(String... filenames) {
 			for (int i = 0; i < filenames.length; i++) {
 				StringBuffer html = new StringBuffer();
-				String urlString = URL_PREFIX + filenames[i];
+				String urlString = ARCHIVER_PREFIX + filenames[i];
 				String tempFilePath = NovelUtils.TEMP_DIR + filenames[i];
 
 				try {
@@ -261,12 +240,12 @@ public class EynyDownloader extends AbstractDownloader {
 
 					connection.setDoOutput(true);
 					connection.setRequestProperty("User-Agent", MOBILE_USER_AGENTS[tid
-						% MOBILE_USER_AGENTS.length]);
+							% MOBILE_USER_AGENTS.length]);
 					connection.connect();
 
 					InputStream inStream = (InputStream) connection.getInputStream();
 					BufferedReader reader = new BufferedReader(new InputStreamReader(inStream,
-						"utf8"));
+							"utf8"));
 					String line = "";
 					while ((line = reader.readLine()) != null) {
 						html.append(line);
@@ -277,7 +256,7 @@ public class EynyDownloader extends AbstractDownloader {
 				}
 				try {
 					OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(
-						tempFilePath), "UTF-8");
+							tempFilePath), "UTF-8");
 					writer.write(html.toString());
 					writer.flush();
 					writer.close();
@@ -291,6 +270,10 @@ public class EynyDownloader extends AbstractDownloader {
 		}
 	}
 
+	/**
+	 * Since archiver html is not in a good strcture,
+	 * stick on regarding html as text file to parse
+	 */
 	private class Parser extends AsyncTask<String, Integer, String> {
 		@Override
 		protected String doInBackground(String... filenames) {
@@ -300,7 +283,7 @@ public class EynyDownloader extends AbstractDownloader {
 			Pattern pHtmlTag = Pattern.compile("<[^>]+>", Pattern.CASE_INSENSITIVE);
 			Pattern pTitle = Pattern.compile("<h3>(.+)?</h3>");
 			Pattern pModStamp = Pattern
-				.compile(" 本帖最後由 \\S+ 於 \\d{4}-\\d{1,2}-\\d{1,2} \\d{2}:\\d{2} (\\S{2} )?編輯 ");
+					.compile(" 本帖最後由 \\S+ 於 \\d{4}-\\d{1,2}-\\d{1,2} \\d{2}:\\d{2} (\\S{2} )?編輯 ");
 			Matcher matcher;
 			String[] targets = {"&nbsp;", "<br/>", "<br />"};
 			String[] replacements = {"", "\r\n", "\r\n"};
@@ -318,7 +301,7 @@ public class EynyDownloader extends AbstractDownloader {
 				stage = 0;
 				try {
 					reader = new BufferedReader(new InputStreamReader(new FileInputStream(
-						tempFilePath), "UTF-8"));
+							tempFilePath), "UTF-8"));
 					while ((line = reader.readLine()) != null) {
 						switch (stage) {
 							case 0:

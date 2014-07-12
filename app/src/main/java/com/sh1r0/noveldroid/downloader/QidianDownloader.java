@@ -7,6 +7,10 @@ import android.os.Message;
 import com.sh1r0.noveldroid.Novel;
 import com.sh1r0.noveldroid.NovelUtils;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -108,28 +112,16 @@ public class QidianDownloader extends AbstractDownloader {
 			Novel novel = novels[0];
 
 			try {
-				URL url = new URL("http://m.qidian.com.tw/books/" + novel.id);
-				BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream(),
-					"utf8"));
+				Document doc = Jsoup.connect("http://m.qidian.com.tw/books/" + novel.id).get();
+				Element description = doc.select("meta[name=description]").first();
 
-				String line = "";
-				String regex = "(\\S+)\\((\\S+)\\):";
+				String regex = "^(\\S+)\\((\\S+)\\):";
 				Pattern p = Pattern.compile(regex);
-				Matcher matcher;
-				int start;
-				while ((line = reader.readLine()) != null) {
-					if ((start = line.indexOf("<meta name=\"description\" content=\"")) >= 0) {
-						start += 34;
-						line = line.substring(start);
-						matcher = p.matcher(line);
-						if (matcher.find()) {
-							novel.name = matcher.group(1);
-							novel.author = matcher.group(2);
-						}
-						break;
-					}
+				Matcher matcher = p.matcher(description.attr("content"));
+				if (matcher.find()) {
+					novel.name = matcher.group(1);
+					novel.author = matcher.group(2);
 				}
-				reader.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

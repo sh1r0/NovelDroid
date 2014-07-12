@@ -7,6 +7,9 @@ import android.os.Message;
 import com.sh1r0.noveldroid.Novel;
 import com.sh1r0.noveldroid.NovelUtils;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,6 +20,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ZonghengDownloader extends AbstractDownloader {
 	private static ZonghengDownloader downloader;
@@ -72,7 +77,7 @@ public class ZonghengDownloader extends AbstractDownloader {
 			NovelUtils.unZip(novel.id + ".zip", novel.id + ".txt");
 
 			reader = new BufferedReader(new InputStreamReader(new FileInputStream(
-				NovelUtils.TEMP_DIR + novel.id + ".txt"), "UTF-8"));
+					NovelUtils.TEMP_DIR + novel.id + ".txt"), "UTF-8"));
 			writer = NovelUtils.newNovelWriter(downDirPath + outputFileName, encoding);
 
 			NovelUtils novelUtils = NovelUtils.getInstance();
@@ -112,25 +117,15 @@ public class ZonghengDownloader extends AbstractDownloader {
 			Novel novel = novels[0];
 
 			try {
-				URL url = new URL("http://big5.zongheng.com/book/" + novel.id + ".html");
-				BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream(),
-					"utf8"));
-
-				String line = "";
-				int start;
-				while ((line = reader.readLine()) != null) {
-					if ((start = line.indexOf("<title>")) >= 0) {
-						start += 7;
-						line = line.substring(start);
-						String[] tokens = line.split("，");
-						if (tokens.length > 1) {
-							novel.name = tokens[0];
-							novel.author = tokens[1];
-						}
-						break;
-					}
+				Document doc = Jsoup.connect("http://big5.zongheng.com/book/" + novel.id + ".html").get();
+				String title = doc.title();
+				String regex = "^([^，]+)，([^，]+)，";
+				Pattern pattern = Pattern.compile(regex);
+				Matcher matcher = pattern.matcher(title);
+				if (matcher.find()) {
+					novel.name = matcher.group(1);
+					novel.author = matcher.group(2);
 				}
-				reader.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

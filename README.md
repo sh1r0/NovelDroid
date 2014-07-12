@@ -45,9 +45,12 @@ An android app for extracting novel contents from forum posts
 3. Search: with google custom search
 4. UI: with ActionBar and Navigation Drawer
 
+##Libraries
+* [android-process-button](https://github.com/dmytrodanylyk/android-process-button/)
+* [ExFilePicker](https://github.com/bartwell/ExFilePicker/)
+* [jsoup](http://jsoup.org/)
+
 ##Credits
-* [android-process-button](https://github.com/dmytrodanylyk/android-process-button)
-* [ExFilePicker](https://github.com/bartwell/ExFilePicker)
-* [CSNovelCrawler](http://rngmontoli.blogspot.tw/2013/06/csnovelcrawler.html)
+* [CSNovelCrawler](https://github.com/rngmontoli/CSNovelCrawler/)
 * [JComicDownloader](https://sites.google.com/site/jcomicdownloader/)
-* [JNovelDownloader](http://www.pupuliao.info/jnoveldownloader-%E5%B0%8F%E8%AA%AA%E4%B8%8B%E8%BC%89%E5%99%A8/)
+* [JNovelDownloader](https://github.com/pupuliao/JNovelDownloader/)

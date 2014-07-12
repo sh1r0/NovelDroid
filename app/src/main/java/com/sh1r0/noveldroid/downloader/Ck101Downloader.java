@@ -9,6 +9,13 @@ import android.os.Message;
 import com.sh1r0.noveldroid.Novel;
 import com.sh1r0.noveldroid.NovelUtils;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
+import org.jsoup.nodes.TextNode;
+import org.jsoup.select.Elements;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,11 +27,12 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Ck101Downloader extends AbstractDownloader {
-	private static final String URL_PREFIX = "http://ck101.com/thread-";
+	private static final String THREAD_PREFIX = "http://ck101.com/thread-";
 	private static Ck101Downloader downloader;
 
 	private Novel novel;
@@ -171,62 +179,34 @@ public class Ck101Downloader extends AbstractDownloader {
 		@Override
 		protected Novel doInBackground(Novel... novels) {
 			Novel novel = novels[0];
-			boolean infoFound = false;
-			boolean pageFound = false;
 
 			try {
-				URL url = new URL(URL_PREFIX + novel.id + "-1-1.html");
-				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-				connection.setDoOutput(true);
-				connection.setRequestProperty("User-Agent", DESKTOP_USER_AGENT);
-				connection.connect();
-				BufferedReader reader = new BufferedReader(new InputStreamReader(
-					connection.getInputStream(), "utf8"));
+				Document doc = Jsoup.connect(THREAD_PREFIX + novel.id + "-1-1.html").get();
 
-				String line = "";
-				String regex = "";
-				Matcher matcher;
-				Pattern p;
-				int start, end;
-				while (!(infoFound && pageFound) && (line = reader.readLine()) != null) {
-					if ((start = line.indexOf("<title>")) >= 0) {
-						start += 7;
-						end = line.indexOf("</title>", start);
-						line = line.substring(start, end);
+				String title = doc.title();
+				String regex = "([\\[【「（《［].+[\\]】」）》］])?\\s*[【《\\[]?\\s*([\\S&&[^】》]]+).*作者[】:：︰ ]*([\\S&&[^(（《﹝【]]+)";
+				Pattern pattern = Pattern.compile(regex);
+				Matcher matcher = pattern.matcher(title);
+				if (matcher.find()) {
+					novel.name = matcher.group(2);
+					novel.author = matcher.group(3);
+				}
 
-						regex = "([\\[【「（《［].+[\\]】」）》］])?\\s*[【《\\[]?\\s*([\\S&&[^】》]]+).*作者[】:：︰ ]*([\\S&&[^(（《﹝【]]+)";
-						p = Pattern.compile(regex);
-						matcher = p.matcher(line);
+				Element pg = doc.select("div.pg").first(); // if the novel has only 1 page, pg is null
+				if (pg != null) {
+					Elements pageLinks = pg.select("a[href]");
+					Element lastPage = pageLinks.get(pageLinks.size() - 2); // the 2nd last link
+					if (lastPage.hasClass("last")) {
+						regex = "([1-9][0-9]*)$";
+						pattern = Pattern.compile(regex);
+						matcher = pattern.matcher(lastPage.text());
 						if (matcher.find()) {
-							novel.name = matcher.group(2);
-							novel.author = matcher.group(3);
-							infoFound = true;
-						}
-					}
-					if ((start = line.indexOf("<div class=\"pg\">")) >= 0) {
-						end = line.indexOf("class=\"nxt\"", start);
-						if (end <= 0) {
-							pageFound = true; // only 1 page
-							continue;
-						}
-
-						String hyperlinkPrefix = "<a href=\"http://ck101.com/thread-";
-						end = line.lastIndexOf(hyperlinkPrefix, end) - 1; // the start position of next page link
-						start = line.lastIndexOf(hyperlinkPrefix, end); // the start position of last page link
-						if (start < 0) {
-							throw new IOException("url pattern error!!");
-						}
-
-						regex = hyperlinkPrefix + "\\d+-(\\d+)-\\w+.html\"";
-						p = Pattern.compile(regex);
-						matcher = p.matcher(line);
-						if (matcher.find(start)) {
 							novel.lastPage = Integer.parseInt(matcher.group(1));
-							pageFound = true;
 						}
+					} else {
+						novel.lastPage = Integer.parseInt(lastPage.text());
 					}
 				}
-				reader.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -252,7 +232,7 @@ public class Ck101Downloader extends AbstractDownloader {
 		protected Boolean doInBackground(String... filenames) {
 			for (int i = 0; i < filenames.length; i++) {
 				StringBuffer html = new StringBuffer();
-				String urlString = URL_PREFIX + filenames[i];
+				String urlString = THREAD_PREFIX + filenames[i];
 				String tempFilePath = NovelUtils.TEMP_DIR + filenames[i];
 
 				try {
@@ -264,9 +244,8 @@ public class Ck101Downloader extends AbstractDownloader {
 						% MOBILE_USER_AGENTS.length]);
 					connection.connect();
 
-					InputStream inStream = (InputStream) connection.getInputStream();
-					BufferedReader reader = new BufferedReader(new InputStreamReader(inStream,
-						"utf8"));
+					InputStream inStream = connection.getInputStream();
+					BufferedReader reader = new BufferedReader(new InputStreamReader(inStream, "utf8"));
 					String line = "";
 					while ((line = reader.readLine()) != null) {
 						html.append(line);
@@ -294,101 +273,61 @@ public class Ck101Downloader extends AbstractDownloader {
 	private class Parser extends AsyncTask<String, Integer, String> {
 		@Override
 		protected String doInBackground(String... filenames) {
-			StringBuilder bookData = new StringBuilder();
-			BufferedReader reader = null;
+			StringBuilder bookContent = new StringBuilder();
+			BufferedReader reader;
 			String line;
-			int otherTable = 0;
-			Pattern p_html = Pattern.compile("<[^>]+>", Pattern.CASE_INSENSITIVE);
-			Matcher m_html;
-			String[] targets = {"&nbsp;", "<br/>", "<br />"};
-			String[] replacements = {"", "\r\n", "\r\n"};
 
-			int stage;
 			for (int i = 0; i < filenames.length; i++) {
-				String tempFilePath = NovelUtils.TEMP_DIR + filenames[i];
-				stage = 0;
 				try {
 					reader = new BufferedReader(new InputStreamReader(new FileInputStream(
-						tempFilePath), "UTF-8"));
-
+						new File(NovelUtils.TEMP_DIR, filenames[i])), "UTF-8"));
 					while ((line = reader.readLine()) != null) {
-						switch (stage) {
-							case 0:
-								if (line.contains("<div id=\"pbody\" class=\"pbody\">")) {
-									stage = 1;
-								}
-								break;
-							case 1:
-								if (line.contains("<h")) { // chapter title
-									line = NovelUtils.replace(line, " ", "");
-									m_html = p_html.matcher(line);
-									line = m_html.replaceAll("");
-									bookData.append(line);
-									bookData.append("\r\n");
-								}
-								if (line.contains("<div class=\"mes ")) {
-									stage = 2;
-								}
-								break;
-							case 2:
-								if (line.contains("class=\"postmessage\">")) {
-									stage = 3;
-									if (line.contains("<i class=\"pstatus\">")) { // filter out modified time
-										line = line.replaceAll("<i class=\"pstatus\">[^<>]+ </i>", "");
-									}
-									if (line.contains("<div class=\"quote\">")) { // filter out quotes
-										otherTable++;
-										break;
-									}
-									line = NovelUtils.replace(line, targets, replacements);
-									m_html = p_html.matcher(line);
-									line = m_html.replaceAll("");
-									line = line.replaceAll("^[ \t]+", "");
-									bookData.append(line);
-									bookData.append("\r\n");
-								}
-								break;
-							case 3:
-								if (line.contains("<div "))
-									otherTable++;
-								if (line.contains("</div>")) {
-									if (otherTable > 0) {
-										otherTable--;
-										break;
-									} else {
-										stage = 0;
-										line += "\r\n";
-									}
-								}
-								if (otherTable == 0) {
-									line = NovelUtils.replace(line, targets, replacements);
-									if (line.contains("<i class=\"pstatus\">")) { // filter out modified time
-										line = line.replaceAll("<i class=\"pstatus\">[^<>]+ </i>",
-											"");
-									}
-									m_html = p_html.matcher(line);
-									line = m_html.replaceAll("");
-									line = line.replaceAll("^[ \t　]+", "");
-									if (line.length() > 2) {
-										bookData.append("　　");
-									}
-									bookData.append(line);
-								}
-								break;
-							default:
-								break;
+						bookContent.append(line); // discard line endings
+					}
+					reader.close();
+
+					Document doc = Jsoup.parse(bookContent.toString());
+					Elements posts = doc.select("div.postmessage");
+
+					for (Element post : posts) {
+						List<Element> elements = post.children();
+						for (int j = 0; j < elements.size(); j++) {
+							final Element element = elements.get(j);
+							if (element.nodeName().equals("img") || element.hasClass("pstatus") || element.hasClass("quote")) {
+								element.remove();
+							} else if (element.nodeName().equals("br")) {
+								element.replaceWith(TextNode.createFromEncoded("\r\n", ""));
+							} else {
+								unwrapNodeAndDescendentNodes(element);
+							}
+						}
+
+						for (TextNode textNode : post.textNodes()) {
+							bookContent.append(textNode.getWholeText());
 						}
 					}
 
-					bookData.append("\r\n");
-					reader.close();
+					bookContent.append("\r\n"); // end of page
 				} catch (IOException e) {
 					e.printStackTrace();
 					return null;
 				}
 			}
 
-			return bookData.toString();
+			return bookContent.toString();
+		}
+
+		private void unwrapNodeAndDescendentNodes(Node node) {
+			if (node.nodeName().equals("#text")) {
+				return;
+			}
+
+			for (int i = node.childNodeSize() - 1; i >= 0; i--) {
+				final Node child = node.childNode(i);
+				unwrapNodeAndDescendentNodes(child);
+			}
+
+			node.unwrap();
 		}
 	}
 }

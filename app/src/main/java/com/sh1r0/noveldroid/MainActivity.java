@@ -168,7 +168,6 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 			}
 		});
 
-		btnDownload.setEnabled(false);
 		btnDownload.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {

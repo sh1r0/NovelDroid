@@ -12,13 +12,13 @@
 	    android:paddingLeft="@dimen/activity_horizontal_margin"
 	    android:paddingRight="@dimen/activity_horizontal_margin"
 	    android:paddingTop="@dimen/activity_vertical_margin" >
-		
+
 	    <LinearLayout
 	        android:id="@+id/id_info"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
 	        android:orientation="horizontal" >
-	
+
 	        <Spinner
 	            android:id="@+id/spn_doamin"
 	            android:layout_width="0dp"
@@ -53,7 +53,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp" />
-	
+
 	    <LinearLayout
 	        android:id="@+id/novel_name_info"
 	        android:layout_width="fill_parent"
@@ -62,7 +62,7 @@
             android:layout_below="@id/btn_analyze"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true">
-	
+
 	        <TextView
 	            android:id="@+id/tv_novel_name"
 	            android:layout_width="wrap_content"
@@ -76,20 +76,20 @@
 	            android:layout_weight="1"
 	            android:inputType="text" />
 	    </LinearLayout>
-	
+
 	    <LinearLayout
 	        android:id="@+id/author_info"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
 	        android:layout_below="@id/novel_name_info"
 	        android:orientation="horizontal" >
-	
+
 	        <TextView
 	            android:id="@+id/tv_author"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:text="@string/author" />
-	
+
 	        <EditText
 	            android:id="@+id/et_author"
 	            android:layout_width="0dp"
@@ -98,33 +98,33 @@
 	            android:hint="@string/author_hint"
 	            android:inputType="text" />
 	    </LinearLayout>
-	
+
 	    <LinearLayout
 	        android:id="@+id/page_info"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
 	        android:layout_below="@id/author_info"
 	        android:orientation="horizontal" >
-	
+
 	        <TextView
 	            android:id="@+id/tv_from_page"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:text="@string/from_page" />
-	
+
 	        <EditText
 	            android:id="@+id/et_from_page"
 	            android:layout_width="0dp"
 	            android:layout_height="wrap_content"
 	            android:layout_weight="1"
 	            android:inputType="number" />
-	
+
 	        <TextView
 	            android:id="@+id/tv_to_page"
 	            android:layout_width="wrap_content"
 	            android:layout_height="wrap_content"
 	            android:text="@string/to_page" />
-	
+
 	        <EditText
 	            android:id="@+id/et_to_page"
 	            android:layout_width="0dp"
@@ -135,6 +135,7 @@
 
         <com.dd.processbutton.iml.SubmitProcessButton
             android:id="@+id/btn_download"
+            android:enabled="false"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="@string/download"
@@ -148,7 +149,7 @@
             custom:pb_colorProgress="@color/holo_red_light"/>
 
     </RelativeLayout>
-	
+
 	<ListView
         android:id="@+id/left_drawer"
         android:layout_width="240dp"
