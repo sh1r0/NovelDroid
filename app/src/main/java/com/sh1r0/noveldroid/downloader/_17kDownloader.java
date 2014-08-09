@@ -21,6 +21,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class _17kDownloader extends AbstractDownloader {
+	private static final int SITE_ID = 4;
 	private static _17kDownloader downloader;
 
 	private Novel novel;
@@ -39,10 +40,11 @@ public class _17kDownloader extends AbstractDownloader {
 	}
 
 	@Override
-	public Novel analyze(String id) throws Exception {
+	public Novel analyze(String bookID) throws Exception {
+		novel.siteID = SITE_ID;
 		novel.name = "";
 		novel.author = "";
-		novel.id = id;
+		novel.bookID = bookID;
 		novel.fromPage = 1;
 		novel.toPage = 1;
 		novel.author = "";
@@ -57,7 +59,7 @@ public class _17kDownloader extends AbstractDownloader {
 	@Override
 	public void download(Handler progressHandler) throws Exception {
 		Downloader downloader = new Downloader(progressHandler);
-		downloader.execute(novel.id + "_txt.zip");
+		downloader.execute(novel.bookID + "_txt.zip");
 		if (!downloader.get())
 			throw new Exception();
 	}
@@ -74,10 +76,10 @@ public class _17kDownloader extends AbstractDownloader {
 		BufferedReader reader = null;
 		OutputStreamWriter writer = null;
 		try {
-			NovelUtils.unZip(novel.id + "_txt.zip", novel.id + ".txt");
+			NovelUtils.unZip(novel.bookID + "_txt.zip", novel.bookID + ".txt");
 
 			reader = new BufferedReader(new InputStreamReader(new FileInputStream(
-				NovelUtils.TEMP_DIR + novel.id + ".txt"), "UTF-8"));
+				NovelUtils.TEMP_DIR + novel.bookID + ".txt"), "UTF-8"));
 			writer = NovelUtils.newNovelWriter(downDirPath + outputFileName, encoding);
 
 			NovelUtils novelUtils = NovelUtils.getInstance();
@@ -117,7 +119,7 @@ public class _17kDownloader extends AbstractDownloader {
 			Novel novel = novels[0];
 
 			try {
-				URL url = new URL("http://www.17k.com/book/" + novel.id + ".html");
+				URL url = new URL("http://www.17k.com/book/" + novel.bookID + ".html");
 				BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream(),
 					"utf8"));
 

@@ -29,6 +29,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class EynyDownloader extends AbstractDownloader {
+	private static final int SITE_ID = 1;
 	private static final String ARCHIVER_PREFIX = "http://www.eyny.com/archiver/tid-";
 	private static final String THREAD_PREFIX = "http://www.eyny.com/thread-";
 	private static EynyDownloader downloader;
@@ -49,9 +50,10 @@ public class EynyDownloader extends AbstractDownloader {
 	}
 
 	@Override
-	public Novel analyze(String tid) throws Exception {
+	public Novel analyze(String bookID) throws Exception {
 		novel = new Novel();
-		novel.id = tid;
+		novel.siteID = SITE_ID;
+		novel.bookID = bookID;
 		AsyncTask<Novel, Integer, Novel> request = new Analyzer();
 		request.execute(novel);
 		novel = request.get();
@@ -69,7 +71,7 @@ public class EynyDownloader extends AbstractDownloader {
 
 		// http://www.eyny.com/archiver/tid-<tid>-<page>.html
 		for (int i = novel.fromPage, n = 0; i <= novel.toPage; i++) {
-			filenames[n] = novel.id + "-" + i + ".html";
+			filenames[n] = novel.bookID + "-" + i + ".html";
 			n++;
 		}
 
@@ -179,7 +181,7 @@ public class EynyDownloader extends AbstractDownloader {
 			Novel novel = novels[0];
 
 			try {
-				Document doc = Jsoup.connect(THREAD_PREFIX + novel.id + "-1-1.html").get();
+				Document doc = Jsoup.connect(THREAD_PREFIX + novel.bookID + "-1-1.html").get();
 
 				String title = doc.title();
 				String regex = "(\\S+)\\s*-\\s*【(\\S+)】";

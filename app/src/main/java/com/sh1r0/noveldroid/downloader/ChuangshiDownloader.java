@@ -19,6 +19,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class ChuangshiDownloader extends AbstractDownloader {
+	private static final int SITE_ID = 5;
 	private static ChuangshiDownloader downloader;
 
 	private Novel novel;
@@ -37,10 +38,11 @@ public class ChuangshiDownloader extends AbstractDownloader {
 	}
 
 	@Override
-	public Novel analyze(String id) throws Exception {
+	public Novel analyze(String bookID) throws Exception {
+		novel.siteID = SITE_ID;
 		novel.name = "";
 		novel.author = "";
-		novel.id = id;
+		novel.bookID = bookID;
 		novel.fromPage = 1;
 		novel.toPage = 1;
 
@@ -54,7 +56,7 @@ public class ChuangshiDownloader extends AbstractDownloader {
 	@Override
 	public void download(Handler progressHandler) throws Exception {
 		Downloader downloader = new Downloader(progressHandler);
-		downloader.execute(novel.id + ".txt");
+		downloader.execute(novel.bookID + ".txt");
 		if (!downloader.get())
 			throw new Exception();
 	}
@@ -72,7 +74,7 @@ public class ChuangshiDownloader extends AbstractDownloader {
 		OutputStreamWriter writer = null;
 		try {
 			reader = new BufferedReader(new InputStreamReader(new FileInputStream(
-				NovelUtils.TEMP_DIR + novel.id + ".txt"), "UTF-8"));
+				NovelUtils.TEMP_DIR + novel.bookID + ".txt"), "UTF-8"));
 			writer = NovelUtils.newNovelWriter(downDirPath + outputFileName, encoding);
 
 			String line;
@@ -108,8 +110,8 @@ public class ChuangshiDownloader extends AbstractDownloader {
 
 			try {
 				URL url = new URL("http://chuangshi.qq.com/www/txt/txt1/"
-					+ novel.id.substring(4, 5) + "/" + novel.id.substring(3, 5) + "/"
-					+ novel.id.substring(0, 5) + "/" + novel.id + ".txt");
+					+ novel.bookID.substring(4, 5) + "/" + novel.bookID.substring(3, 5) + "/"
+					+ novel.bookID.substring(0, 5) + "/" + novel.bookID + ".txt");
 
 				String line;
 				BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream(),

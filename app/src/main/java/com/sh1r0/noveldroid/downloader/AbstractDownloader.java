@@ -16,7 +16,7 @@ abstract public class AbstractDownloader {
 		"Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.10",
 		"Mozilla/5.0 (compatible; MSIE 9.0; Windows Phone OS 7.5; Trident/5.0; IEMobile/9.0; SAMSUNG; SGH-i917)"};
 
-	public abstract Novel analyze(String id) throws Exception;
+	public abstract Novel analyze(String bookID) throws Exception;
 
 	public abstract void download(Handler progressHandler) throws Exception;
 

@@ -25,6 +25,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class QidianDownloader extends AbstractDownloader {
+	private static final int SITE_ID = 2;
 	private static QidianDownloader downloader;
 
 	private Novel novel;
@@ -41,10 +42,11 @@ public class QidianDownloader extends AbstractDownloader {
 	}
 
 	@Override
-	public Novel analyze(String id) throws Exception {
+	public Novel analyze(String bookID) throws Exception {
+		novel.siteID = SITE_ID;
 		novel.name = "";
 		novel.author = "";
-		novel.id = id;
+		novel.bookID = bookID;
 		novel.fromPage = 1;
 		novel.toPage = 1;
 
@@ -58,7 +60,7 @@ public class QidianDownloader extends AbstractDownloader {
 	@Override
 	public void download(Handler progressHandler) throws Exception {
 		Downloader downloader = new Downloader(progressHandler);
-		downloader.execute(novel.id + ".txt");
+		downloader.execute(novel.bookID + ".txt");
 		if (!downloader.get())
 			throw new Exception();
 	}
@@ -76,7 +78,7 @@ public class QidianDownloader extends AbstractDownloader {
 		OutputStreamWriter writer = null;
 		try {
 			reader = new BufferedReader(new InputStreamReader(new FileInputStream(
-				NovelUtils.TEMP_DIR + novel.id + ".txt"), "GBK"));
+				NovelUtils.TEMP_DIR + novel.bookID + ".txt"), "GBK"));
 			writer = NovelUtils.newNovelWriter(downDirPath + outputFileName, encoding);
 
 			NovelUtils novelUtils = NovelUtils.getInstance();
@@ -112,7 +114,7 @@ public class QidianDownloader extends AbstractDownloader {
 			Novel novel = novels[0];
 
 			try {
-				Document doc = Jsoup.connect("http://m.qidian.com.tw/books/" + novel.id).get();
+				Document doc = Jsoup.connect("http://m.qidian.com.tw/books/" + novel.bookID).get();
 				Element description = doc.select("meta[name=description]").first();
 
 				String regex = "^(\\S+)\\((\\S+)\\):";

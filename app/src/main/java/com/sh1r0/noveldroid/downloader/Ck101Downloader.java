@@ -32,6 +32,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Ck101Downloader extends AbstractDownloader {
+	private static final int SITE_ID = 0;
 	private static final String THREAD_PREFIX = "http://ck101.com/thread-";
 	private static Ck101Downloader downloader;
 
@@ -51,9 +52,10 @@ public class Ck101Downloader extends AbstractDownloader {
 	}
 
 	@Override
-	public Novel analyze(String tid) throws Exception {
+	public Novel analyze(String bookID) throws Exception {
 		novel = new Novel();
-		novel.id = tid;
+		novel.siteID = SITE_ID;
+		novel.bookID = bookID;
 		AsyncTask<Novel, Integer, Novel> request = new Analyzer();
 		request.execute(novel);
 		novel = request.get();
@@ -71,7 +73,7 @@ public class Ck101Downloader extends AbstractDownloader {
 
 		// http://ck101.com/thread-<tid>-<page>-1.html
 		for (int i = novel.fromPage, n = 0; i <= novel.toPage; i++) {
-			filenames[n] = novel.id + "-" + i + "-1.html";
+			filenames[n] = novel.bookID + "-" + i + "-1.html";
 			n++;
 		}
 
@@ -181,7 +183,7 @@ public class Ck101Downloader extends AbstractDownloader {
 			Novel novel = novels[0];
 
 			try {
-				Document doc = Jsoup.connect(THREAD_PREFIX + novel.id + "-1-1.html").get();
+				Document doc = Jsoup.connect(THREAD_PREFIX + novel.bookID + "-1-1.html").get();
 
 				String title = doc.title();
 				String regex = "([\\[【「（《［].+[\\]】」）》］])?\\s*[【《\\[]?\\s*([\\S&&[^】》]]+).*作者[】:：︰ ]*([\\S&&[^(（《﹝【]]+)";
@@ -241,7 +243,7 @@ public class Ck101Downloader extends AbstractDownloader {
 
 					connection.setDoOutput(true);
 					connection.setRequestProperty("User-Agent", MOBILE_USER_AGENTS[tid
-						% MOBILE_USER_AGENTS.length]);
+							% MOBILE_USER_AGENTS.length]);
 					connection.connect();
 
 					InputStream inStream = connection.getInputStream();
@@ -256,7 +258,7 @@ public class Ck101Downloader extends AbstractDownloader {
 				}
 				try {
 					OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(
-						tempFilePath), "UTF-8");
+							tempFilePath), "UTF-8");
 					writer.write(html.toString());
 					writer.flush();
 					writer.close();
@@ -273,6 +275,7 @@ public class Ck101Downloader extends AbstractDownloader {
 	private class Parser extends AsyncTask<String, Integer, String> {
 		@Override
 		protected String doInBackground(String... filenames) {
+			StringBuilder html = new StringBuilder();
 			StringBuilder bookContent = new StringBuilder();
 			BufferedReader reader;
 			String line;
@@ -280,13 +283,14 @@ public class Ck101Downloader extends AbstractDownloader {
 			for (int i = 0; i < filenames.length; i++) {
 				try {
 					reader = new BufferedReader(new InputStreamReader(new FileInputStream(
-						new File(NovelUtils.TEMP_DIR, filenames[i])), "UTF-8"));
+							new File(NovelUtils.TEMP_DIR, filenames[i])), "UTF-8"));
+					html.setLength(0);
 					while ((line = reader.readLine()) != null) {
-						bookContent.append(line); // discard line endings
+						html.append(line); // discard line endings
 					}
 					reader.close();
 
-					Document doc = Jsoup.parse(bookContent.toString());
+					Document doc = Jsoup.parse(html.toString());
 					Elements posts = doc.select("div.postmessage");
 
 					for (Element post : posts) {

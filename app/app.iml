@@ -63,9 +63,11 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="library-1.0.0" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-20.0.0" level="project" />
+    <orderEntry type="library" exported="" name="jsoup-1.7.3" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-20.0.0" level="project" />
     <orderEntry type="library" exported="" name="support-v4-20.0.0" level="project" />
     <orderEntry type="library" exported="" name="Parse-1.3.9" level="project" />
+    <orderEntry type="library" exported="" name="otto-1.3.5" level="project" />
     <orderEntry type="module" module-name="ExFilePicker" exported="" />
   </component>
 </module>
