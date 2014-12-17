@@ -16,7 +16,7 @@ android {
 
     signingConfigs {
         release {
-            storeFile file('D:/Dropbox/Sync/noveldroid.keystore')
+            storeFile file('noveldroid.keystore')
             storePassword ""
             keyAlias "release"
             keyPassword ""
