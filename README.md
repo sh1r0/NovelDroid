@@ -48,7 +48,7 @@ An android app for extracting novel contents from forum posts
 3. Search: with google custom search
 4. UI: with ActionBar and Navigation Drawer
 
-##Credits
+##Credit
 * [CSNovelCrawler](https://github.com/rngmontoli/CSNovelCrawler/)
 * [JComicDownloader](https://sites.google.com/site/jcomicdownloader/)
 * [JNovelDownloader](https://github.com/pupuliao/JNovelDownloader/)
