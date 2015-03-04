@@ -3,7 +3,7 @@ NovelDroid
 An android app for extracting novel contents from forum posts
 
 ##Latest Version
-1.4.1
+1.4.2
 
 ##Changelog
 ###1.4.2

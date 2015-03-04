@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string-array name="domain">
         <item>ck101</item>
         <item>eyny</item>
@@ -16,9 +15,9 @@
     </string-array>
 
     <string-array name="naming_rule">
-        <item>書名</item>
-        <item>書名_作者</item>
-        <item>作者_書名</item>
+        <item>@string/book_name</item>
+        <item>@string/book_name_author</item>
+        <item>@string/author_book_name</item>
     </string-array>
 
     <string-array name="naming_rule_value">

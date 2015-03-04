@@ -51,5 +51,10 @@
     <string name="download_folder">Download Folder</string>
     <string name="new_folder">New Folder</string>
     <string name="new_folder_name">New Folder Name</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="book_name">BookName</string>
+    <string name="book_name_author">BookName_Author</string>
+    <string name="author_book_name">Author_BookName</string>
 
 </resources>

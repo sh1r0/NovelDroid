@@ -10,8 +10,8 @@ android {
         applicationId "com.sh1r0.noveldroid"
         minSdkVersion 10
         targetSdkVersion 20
-        versionCode 51
-        versionName "1.4.1"
+        versionCode 52
+        versionName "1.4.2"
     }
 
     signingConfigs {

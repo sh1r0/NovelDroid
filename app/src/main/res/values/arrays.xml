@@ -8,18 +8,18 @@
         <item>17k</item>
         <item>chuangshi</item>
     </string-array>
-    
+
     <string-array name="encoding">
         <item>UTF-8</item>
         <item>UTF-16LE</item>
     </string-array>
-    
+
     <string-array name="naming_rule">
-        <item>BookName</item>
-        <item>BookName_Author</item>
-        <item>Author_BookName</item>
+        <item>@string/book_name</item>
+        <item>@string/book_name_author</item>
+        <item>@string/author_book_name</item>
     </string-array>
-    
+
     <string-array name="naming_rule_value">
         <item>0</item>
         <item>1</item>
