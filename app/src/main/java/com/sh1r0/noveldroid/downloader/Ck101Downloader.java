@@ -254,6 +254,7 @@ public class Ck101Downloader extends AbstractDownloader {
 						html.append("\n");
 					}
 				} catch (Exception e) {
+					e.printStackTrace();
 					return false;
 				}
 				try {
@@ -263,6 +264,7 @@ public class Ck101Downloader extends AbstractDownloader {
 					writer.flush();
 					writer.close();
 				} catch (Exception e) {
+					e.printStackTrace();
 					return false;
 				}
 				publishProgress(1);
@@ -309,9 +311,10 @@ public class Ck101Downloader extends AbstractDownloader {
 						for (TextNode textNode : post.textNodes()) {
 							bookContent.append(textNode.getWholeText());
 						}
+						bookContent.append("\r\n"); // end of post
 					}
 
-					bookContent.append("\r\n"); // end of page
+					// bookContent.append("\r\n"); // end of page
 				} catch (IOException e) {
 					e.printStackTrace();
 					return null;
