@@ -313,8 +313,6 @@ public class Ck101Downloader extends AbstractDownloader {
 						}
 						bookContent.append("\r\n"); // end of post
 					}
-
-					// bookContent.append("\r\n"); // end of page
 				} catch (IOException e) {
 					e.printStackTrace();
 					return null;

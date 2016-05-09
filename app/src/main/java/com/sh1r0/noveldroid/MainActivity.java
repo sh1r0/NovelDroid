@@ -21,13 +21,12 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
-import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.ViewDragHelper;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -57,9 +56,8 @@ import com.dd.processbutton.iml.SubmitProcessButton;
 import com.sh1r0.noveldroid.downloader.AbstractDownloader;
 
 import java.io.File;
-import java.lang.reflect.Field;
 
-public class MainActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 	private static final int SUCCESS = 0x10000;
 	private static final int PREPARING = 0x10001;
 	private static final int FAIL = 0x10002;
@@ -118,8 +116,8 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 		btnDownload = (SubmitProcessButton) findViewById(R.id.btn_download);
 		spnDomain = (Spinner) findViewById(R.id.spn_doamin);
 
-		ArrayAdapter<String> spnAdapter = new ArrayAdapter<String>(this,
-			android.R.layout.simple_spinner_item, this.getResources().getStringArray(R.array.domain)
+		ArrayAdapter<String> spnAdapter = new ArrayAdapter<>(this,
+				android.R.layout.simple_spinner_item, this.getResources().getStringArray(R.array.domain)
 		);
 		spnAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		spnDomain.setAdapter(spnAdapter);
@@ -146,7 +144,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 
 				try {
 					novelDownloader = DownloaderFactory.getDownloader(spnDomain
-						.getSelectedItemPosition());
+							.getSelectedItemPosition());
 					if ((novel = novelDownloader.analyze(tid)) == null) {
 						throw new Exception();
 					}
@@ -171,6 +169,8 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 		btnDownload.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				btnDownload.setEnabled(false);
+
 				novel.name = etNovelName.getText().toString();
 				novel.author = etAuthor.getText().toString();
 
@@ -181,13 +181,14 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 					dialog.setMessage(R.string.empty_name_dialog_msg);
 					dialog.setCancelable(false);
 					dialog.setPositiveButton(R.string.ok,
-						new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
+							new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+								}
 							}
-						}
 					);
 					dialog.show();
+					btnDownload.setEnabled(true);
 					return;
 				}
 
@@ -195,7 +196,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 					novel.fromPage = Integer.parseInt(etFromPage.getText().toString());
 					novel.toPage = Integer.parseInt(etToPage.getText().toString());
 					if (novel.fromPage < 1 || novel.fromPage > novel.toPage
-						|| novel.toPage > novel.lastPage) {
+							|| novel.toPage > novel.lastPage) {
 						throw new NumberFormatException();
 					}
 				} catch (NumberFormatException e) {
@@ -205,17 +206,16 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 					dialog.setMessage(R.string.wrong_page_dialog_msg);
 					dialog.setCancelable(false);
 					dialog.setPositiveButton(R.string.ok,
-						new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
+							new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+								}
 							}
-						}
 					);
 					dialog.show();
+					btnDownload.setEnabled(true);
 					return;
 				}
-
-				btnDownload.setEnabled(false);
 
 				File tempDir = new File(NovelUtils.TEMP_DIR);
 				if (!tempDir.exists()) {
@@ -235,8 +235,8 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 							downDirPath = prefs.getString("down_dir", NovelUtils.APP_DIR);
 							mHandler.sendEmptyMessage(PREPARING);
 							filename = novelDownloader.process(downDirPath,
-								Integer.parseInt(prefs.getString("naming_rule", "0")),
-								prefs.getString("encoding", "UTF-8"));
+									Integer.parseInt(prefs.getString("naming_rule", "0")),
+									prefs.getString("encoding", "UTF-8"));
 							if (filename == null) {
 								throw new Exception();
 							}
@@ -252,16 +252,16 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 		});
 
 		DrawerItem[] menu = new DrawerItem[]{
-			DrawerItem.create(0, R.string.search, R.drawable.ic_action_search, this),
-			DrawerItem.create(1, R.string.settings, R.drawable.ic_action_settings, this),
-			DrawerItem.create(2, R.string.quit, R.drawable.ic_action_quit, this)};
+				DrawerItem.create(0, R.string.search, R.drawable.ic_action_search, this),
+				DrawerItem.create(1, R.string.settings, R.drawable.ic_action_settings, this),
+				DrawerItem.create(2, R.string.quit, R.drawable.ic_action_quit, this)};
 
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		mDrawerList = (ListView) findViewById(R.id.left_drawer);
 		mDrawerList.setAdapter(new DrawerItemAdapter(this, R.layout.drawer_list_item, menu));
 		mDrawerList.setOnItemClickListener(this);
 
-		mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.drawable.ic_drawer, 0, 0) {
+		mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, 0, 0) {
 			@Override
 			public void onDrawerClosed(View drawerView) {
 				supportInvalidateOptionsMenu();
@@ -272,20 +272,9 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 				supportInvalidateOptionsMenu();
 			}
 		};
-		mDrawerLayout.setDrawerListener(mDrawerToggle);
+		mDrawerToggle.setDrawerIndicatorEnabled(true);
+		mDrawerLayout.addDrawerListener(mDrawerToggle);
 		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-
-		try {
-			Field mDragger = mDrawerLayout.getClass().getDeclaredField("mLeftDragger");
-			mDragger.setAccessible(true);
-			ViewDragHelper draggerObj = (ViewDragHelper) mDragger.get(mDrawerLayout);
-			Field mEdgeSize = draggerObj.getClass().getDeclaredField("mEdgeSize");
-			mEdgeSize.setAccessible(true);
-			int edge = mEdgeSize.getInt(draggerObj);
-			mEdgeSize.setInt(draggerObj, edge * 10);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 
 		ActionBar actionBar = getSupportActionBar();
 		actionBar.setDisplayHomeAsUpEnabled(true);
@@ -357,8 +346,8 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 			switch (msg.what) {
 				case PREPARING:
 					progressDialog = ProgressDialog.show(MainActivity.this, getResources()
-							.getString(R.string.progress_dialog_title),
-						getResources().getString(R.string.progress_dialog_msg)
+									.getString(R.string.progress_dialog_title),
+							getResources().getString(R.string.progress_dialog_msg)
 					);
 					break;
 
@@ -367,7 +356,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 					btnDownload.setEnabled(true);
 					progressDialog.dismiss();
 					Toast.makeText(getApplicationContext(), R.string.download_success_tooltip,
-						Toast.LENGTH_LONG).show();
+							Toast.LENGTH_LONG).show();
 
 					Intent intent = new Intent(Intent.ACTION_VIEW);
 					Uri uri = Uri.fromFile(new File(downDirPath + filename));
@@ -375,12 +364,12 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 					String ticker = filename + " " + getString(R.string.novel_saved_tooltip);
 
 					NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
-						MainActivity.this).setContentTitle(getString(R.string.app_name))
-						.setContentText(downDirPath + filename).setTicker(ticker)
-						.setSmallIcon(android.R.drawable.stat_sys_download_done)
-						.setAutoCancel(true);
+							MainActivity.this).setContentTitle(getString(R.string.app_name))
+							.setContentText(downDirPath + filename).setTicker(ticker)
+							.setSmallIcon(android.R.drawable.stat_sys_download_done)
+							.setAutoCancel(true);
 					PendingIntent contentIntent = PendingIntent.getActivity(MainActivity.this, 0,
-						intent, 0);
+							intent, 0);
 					mBuilder.setContentIntent(contentIntent);
 					mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 					mNotificationManager.notify(0, mBuilder.build());
@@ -413,7 +402,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 			}
 
 			completeTaskNum += msg.what;
-			progress = (int) completeTaskNum * 100 / totalTaskNum;
+			progress = completeTaskNum * 100 / totalTaskNum;
 			btnDownload.setProgress(progress);
 		}
 	};
@@ -437,7 +426,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 			float y = event.getRawY() + w.getTop() - scrcoords[1];
 
 			if (event.getAction() == MotionEvent.ACTION_UP
-				&& (x < w.getLeft() || x >= w.getRight() || y < w.getTop() || y > w.getBottom())) {
+					&& (x < w.getLeft() || x >= w.getRight() || y < w.getTop() || y > w.getBottom())) {
 				closeKeyboard();
 			}
 		}
@@ -474,7 +463,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
 		LayoutInflater factory = LayoutInflater.from(this);
 		final View searchDialogView = factory.inflate(R.layout.search_dialog, null);
 		final AlertDialog searchDialog = new AlertDialog.Builder(this).setTitle(R.string.search)
-			.setNegativeButton(R.string.close, null).setCancelable(false).create();
+				.setNegativeButton(R.string.close, null).setCancelable(false).create();
 		searchDialog.setView(searchDialogView);
 
 		final WebView wv = (WebView) searchDialogView.findViewById(R.id.wv_search);

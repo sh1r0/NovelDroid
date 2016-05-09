@@ -245,7 +245,7 @@ public class EynyDownloader extends AbstractDownloader {
 							% MOBILE_USER_AGENTS.length]);
 					connection.connect();
 
-					InputStream inStream = (InputStream) connection.getInputStream();
+					InputStream inStream = connection.getInputStream();
 					BufferedReader reader = new BufferedReader(new InputStreamReader(inStream,
 							"utf8"));
 					String line = "";

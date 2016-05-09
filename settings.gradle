@@ -1,1 +1,1 @@
-include ':libs:ExFilePicker', ':app'
+include ':app'
