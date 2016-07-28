@@ -22,6 +22,13 @@ import android.support.v4.util.Pair;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.Preference.OnPreferenceClickListener;
 import android.support.v7.preference.PreferenceFragmentCompat;
+import android.support.v7.view.ContextThemeWrapper;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nononsenseapps.filepicker.FilePickerActivity;
@@ -41,23 +48,26 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements
 	SharedPreferences.OnSharedPreferenceChangeListener {
 	private static final String KEY_ENCODING = "encoding";
 	private static final String KEY_NAMING_RULE = "naming_rule";
+	private static final String KEY_NAMING_RULE_PREVIEW = "naming_rule_preivew";
 	private static final String KEY_DOWN_DIR = "down_dir";
 	private static final String KEY_CHECK_UPDATE = "check_update";
 	private static final String KEY_ABOUT = "about";
 	private static final int FILE_CODE = 0;
 
-	private String[] namingRuleList;
 	private Preference encoding;
 	private Preference namingRule;
 	private Preference downDir;
 	private Preference checkUpdate;
 	private Preference about;
-	private int namingRulePref;
 	private SharedPreferences prefs;
 	private String versionName;
 	private String aboutMessage;
@@ -81,10 +91,56 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 		}
 		aboutMessage = getString(R.string.version_tag) + versionName + "\n" + getString(R.string.author_tag) + getString(R.string.author_name);
 
-		namingRuleList = this.getResources().getStringArray(R.array.naming_rule);
-
 		encoding = findPreference(KEY_ENCODING);
 		namingRule = findPreference(KEY_NAMING_RULE);
+		namingRule.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				LayoutInflater factory = LayoutInflater.from(getActivity());
+				final View dialog_view = factory.inflate(R.layout.naming_rule_dialog,null);
+				final EditText editText;
+				final TextView previewTextView;
+				previewTextView = (TextView) dialog_view.findViewById(R.id.tv_preivew_string);
+				editText =  (EditText) dialog_view.findViewById(R.id.et_naming_rule);
+				editText.addTextChangedListener(new TextWatcher() {
+					@Override
+					public void afterTextChanged(Editable s) {
+					}
+
+					@Override
+					public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+					}
+
+					@Override
+					public void onTextChanged(CharSequence s, int start, int before, int count) {
+						String userDefinedName = s.toString();
+						String previewString = toPreviewFileNameString(userDefinedName);
+						previewTextView.setText(previewString);
+					}
+				});
+				editText.setText(prefs.getString(KEY_NAMING_RULE, NovelUtils.DEFAULT_NAMING_RULE));
+				AlertDialog.Builder editDialog = new AlertDialog.Builder(getActivity());
+				editDialog.setTitle(getResources().getString(R.string.filename_rule_dialog_title));
+				editDialog.setView(dialog_view);
+				editDialog.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+					// do something when the button is clicked
+					public void onClick(DialogInterface arg0, int arg1) {
+						String userDefinedName = editText.getText().toString();
+						String previewString = toPreviewFileNameString(userDefinedName);
+						if(isFilenameValid(previewString) && !previewString.equals("")) {
+							prefs.edit().putString(KEY_NAMING_RULE_PREVIEW, previewString).commit();
+							namingRule.getSharedPreferences().edit().putString(KEY_NAMING_RULE, userDefinedName).commit();
+						} else {
+							// illegal file name
+							Toast.makeText(getActivity(), getString(R.string.illegalName), Toast.LENGTH_LONG).show();
+						}
+					}
+				});
+				editDialog.show();
+				return true;
+			}
+		});
+
 
 		downDir = findPreference(KEY_DOWN_DIR);
 		downDir.setOnPreferenceClickListener(new OnPreferenceClickListener() {
@@ -147,6 +203,42 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 		};
 	}
 
+	private boolean isFilenameValid(String fileName) {
+		File f = new File(fileName);
+		try {
+			return f.getCanonicalFile().getName().equals(fileName);
+		} catch (IOException e) {
+			return false;
+		}
+	}
+
+	private String toPreviewFileNameString(String format) {
+		String novelName = getString(R.string.bookname);
+		String authorName = getString(R.string.author);
+		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Date date = new Date();
+		String strDate = sdFormat.format(date);
+
+		SimpleDateFormat yyyyFormat = new SimpleDateFormat("yyyy");
+		String yyyyDate = yyyyFormat.format(date);
+
+		SimpleDateFormat mmFormat = new SimpleDateFormat("MM");
+		String mmDate = mmFormat.format(date);
+
+		SimpleDateFormat ddFormat = new SimpleDateFormat("dd");
+		String ddDate = ddFormat.format(date);
+
+		// /n = bookname, /a = author, /t = time, /y = year, /m = month and /d = day
+		String filename = format.replace("/n", novelName);
+		filename = filename.replace("/a", authorName);
+		filename = filename.replace("/t", strDate);
+		filename = filename.replace("/y", yyyyDate);
+		filename = filename.replace("/m", mmDate);
+		filename = filename.replace("/d", ddDate);
+
+		return filename;
+	}
+
 	@Override
 	public void onCreatePreferences(Bundle bundle, String s) {
 
@@ -157,8 +249,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 		super.onResume();
 		getActivity().setTitle(R.string.settings);
 		encoding.setSummary(prefs.getString(KEY_ENCODING, "UTF-8"));
-		namingRulePref = Integer.parseInt(prefs.getString(KEY_NAMING_RULE, "0"));
-		namingRule.setSummary(namingRuleList[namingRulePref]);
+		namingRule.setSummary(prefs.getString(KEY_NAMING_RULE_PREVIEW, toPreviewFileNameString(NovelUtils.DEFAULT_NAMING_RULE)));
 		downDir.setSummary(prefs.getString(KEY_DOWN_DIR, NovelUtils.APP_DIR));
 		getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 		getActivity().registerReceiver(receiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
@@ -186,8 +277,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 				encoding.setSummary(sharedPreferences.getString(KEY_ENCODING, "UTF-8"));
 				break;
 			case KEY_NAMING_RULE:
-				namingRulePref = Integer.parseInt(sharedPreferences.getString(KEY_NAMING_RULE, "0"));
-				namingRule.setSummary(namingRuleList[namingRulePref]);
+				namingRule.setSummary(prefs.getString(KEY_NAMING_RULE_PREVIEW, toPreviewFileNameString(NovelUtils.DEFAULT_NAMING_RULE)));
 				break;
 			case KEY_DOWN_DIR:
 				downDir.setSummary(sharedPreferences.getString(KEY_DOWN_DIR, NovelUtils.APP_DIR));

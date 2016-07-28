@@ -13,17 +13,4 @@
         <item>UTF-8</item>
         <item>UTF-16LE</item>
     </string-array>
-
-    <string-array name="naming_rule">
-        <item>@string/book_name</item>
-        <item>@string/book_name_author</item>
-        <item>@string/author_book_name</item>
-    </string-array>
-
-    <string-array name="naming_rule_value">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-    </string-array>
-
 </resources>

@@ -11,14 +11,11 @@
         android:dialogTitle="@string/encoding_dialog_title"
         />
     
-    <ListPreference
+    <Preference
         android:icon="@drawable/ic_action_keyboard"
         android:title="@string/filename_rule"
         android:key="naming_rule"
-        android:entries="@array/naming_rule"
-		android:entryValues="@array/naming_rule_value"
-		android:defaultValue="0"
-        android:dialogTitle="@string/filename_rule_dialog_title"
+        android:dialogTitle="@string/name_rule"
         />
     
     <Preference
