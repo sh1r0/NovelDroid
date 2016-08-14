@@ -13,6 +13,7 @@
     <string name="id_hint">小說 ID</string>
     <string name="novel_name">小說名稱</string>
     <string name="author">作者</string>
+    <string name="bookname">書名</string>
     <string name="from_page">起始頁數</string>
     <string name="analyze">分析</string>
     <string name="analyzing">分析中\u2026</string>
@@ -40,14 +41,12 @@
     <string name="update">更新</string>
     <string name="encoding">編碼</string>
     <string name="encoding_dialog_title">選擇編碼</string>
-    <string name="filename_rule_dialog_title">選擇命名規則</string>
+    <string name="filename_rule_dialog_title">命名規則</string>
+    <string name="name_rule">/n=書名, /a=作者, /t=年-月-日, /y=年, /m=月, /d=日</string>
     <string name="download_folder">下載資料夾</string>
     <string name="new_folder">新資料夾</string>
     <string name="new_folder_name">新資料夾名稱</string>
     <string name="author_hint">選擇性</string>
-    <string name="author_book_name">作者_書名</string>
-    <string name="book_name">書名</string>
-    <string name="book_name_author">書名_作者</string>
     <string name="cancel">取消</string>
     <string name="check_update">檢查更新</string>
     <string name="current_is_latest">無新版本。</string>
@@ -56,5 +55,6 @@
     <string name="filename_rule">檔名規則</string>
     <string name="novel_saved_tooltip">已完成</string>
     <string name="to_page">終止頁數</string>
+    <string name="illegalName">檔名不合適</string>
 
 </resources>

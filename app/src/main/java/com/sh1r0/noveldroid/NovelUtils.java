@@ -7,12 +7,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public class NovelUtils {
+	public static final String DEFAULT_NAMING_RULE = "/n";
 	public static final int MAX_THREAD_NUM = 4;
 	public static final String APP_DIR = Environment.getExternalStorageDirectory().getAbsolutePath() + "/NovelDroid/";
 	public static final String TEMP_DIR = APP_DIR + "temp/";
@@ -55,22 +58,29 @@ public class NovelUtils {
 		return novelUtils;
 	}
 
-	public static String genTxtName(String novelName, String authorName, int namingRule) {
-		String filename = "";
-		switch (namingRule) {
-			case 0:
-				filename = novelName + ".txt";
-				break;
-			case 1:
-				filename = novelName + "_" + authorName + ".txt";
-				break;
-			case 2:
-				filename = authorName + "_" + novelName + ".txt";
-				break;
-			default:
-				filename = novelName + ".txt";
-				break;
-		}
+	public static String genTxtName(String novelName, String authorName, String namingRule) {
+		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Date date = new Date();
+		String strDate = sdFormat.format(date);
+
+		SimpleDateFormat yyyyFormat = new SimpleDateFormat("yyyy");
+		String yyyyDate = yyyyFormat.format(date);
+
+		SimpleDateFormat mmFormat = new SimpleDateFormat("MM");
+		String mmDate = mmFormat.format(date);
+
+		SimpleDateFormat ddFormat = new SimpleDateFormat("dd");
+		String ddDate = ddFormat.format(date);
+
+		// /n = bookname, /a = author, /t = time, /y = year, /m = month and /d = day
+		String filename = namingRule.replace("/n", novelName);
+		filename = filename.replace("/a", authorName);
+		filename = filename.replace("/t", strDate);
+		filename = filename.replace("/y", yyyyDate);
+		filename = filename.replace("/m", mmDate);
+		filename = filename.replace("/d", ddDate);
+
+		filename = filename + ".txt";
 
 		return filename;
 	}

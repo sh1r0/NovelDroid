@@ -66,7 +66,7 @@ public class QidianDownloader extends AbstractDownloader {
 	}
 
 	@Override
-	public String process(String downDirPath, int namingRule, String encoding) {
+	public String process(String downDirPath, String namingRule, String encoding) {
 		File downDir = new File(downDirPath);
 		if (!downDir.exists()) {
 			downDir.mkdirs();

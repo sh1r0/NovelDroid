@@ -20,5 +20,5 @@ abstract public class AbstractDownloader {
 
 	public abstract void download(Handler progressHandler) throws Exception;
 
-	public abstract String process(String downDirPath, int namingRule, String encoding);
+	public abstract String process(String downDirPath, String namingRule, String encoding);
 }

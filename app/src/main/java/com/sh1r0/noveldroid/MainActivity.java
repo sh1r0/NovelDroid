@@ -235,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 							downDirPath = prefs.getString("down_dir", NovelUtils.APP_DIR);
 							mHandler.sendEmptyMessage(PREPARING);
 							filename = novelDownloader.process(downDirPath,
-									Integer.parseInt(prefs.getString("naming_rule", "0")),
+									prefs.getString("naming_rule", NovelUtils.DEFAULT_NAMING_RULE),
 									prefs.getString("encoding", "UTF-8"));
 							if (filename == null) {
 								throw new Exception();
