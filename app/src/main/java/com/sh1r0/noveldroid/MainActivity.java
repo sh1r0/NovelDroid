@@ -468,7 +468,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
 		final WebView wv = (WebView) searchDialogView.findViewById(R.id.wv_search);
 		wv.getSettings().setJavaScriptEnabled(true);
-		wv.loadUrl("https://googledrive.com/host/0By9mvBCbgqrycV9naFJSYm5mbjQ");
+		wv.loadUrl("file:///android_asset/search.html");
 		wv.setWebViewClient(new WebViewClient() {
 			@Override
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
