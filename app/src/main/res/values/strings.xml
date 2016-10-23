@@ -49,7 +49,7 @@
     <string name="encoding_dialog_title">Select Encoding</string>
     <string name="filename_rule">Filename Rule</string>
     <string name="filename_rule_dialog_title">Select Naming Rule</string>
-    <string name="name_rule">/n=bookname, /a=author /t=yyyy-MM-dd, /y=year, /m=month and /d=day</string>
+    <string name="name_rule">/n=bookname, /a=author /t=yyyy-MM-dd,\n/y=year, /m=month and /d=day</string>
     <string name="download_folder">Download Folder</string>
     <string name="new_folder">New Folder</string>
     <string name="new_folder_name">New Folder Name</string>

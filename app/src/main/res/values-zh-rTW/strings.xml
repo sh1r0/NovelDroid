@@ -42,7 +42,7 @@
     <string name="encoding">編碼</string>
     <string name="encoding_dialog_title">選擇編碼</string>
     <string name="filename_rule_dialog_title">命名規則</string>
-    <string name="name_rule">/n=書名, /a=作者, /t=年-月-日, /y=年, /m=月, /d=日</string>
+    <string name="name_rule">/n=書名，/a=作者，/t=年-月-日，\n/y=年，/m=月，/d=日</string>
     <string name="download_folder">下載資料夾</string>
     <string name="new_folder">新資料夾</string>
     <string name="new_folder_name">新資料夾名稱</string>

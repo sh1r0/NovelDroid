@@ -22,7 +22,6 @@ import android.support.v4.util.Pair;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.Preference.OnPreferenceClickListener;
 import android.support.v7.preference.PreferenceFragmentCompat;
-import android.support.v7.view.ContextThemeWrapper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -50,8 +49,6 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements
 	SharedPreferences.OnSharedPreferenceChangeListener {
@@ -70,7 +67,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 	private Preference about;
 	private SharedPreferences prefs;
 	private String versionName;
-	private String aboutMessage;
 
 	private DownloadManager manager;
 	private BroadcastReceiver receiver;
@@ -89,7 +85,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 		} catch (NameNotFoundException e) {
 			e.printStackTrace();
 		}
-		aboutMessage = getString(R.string.version_tag) + versionName + "\n" + getString(R.string.author_tag) + getString(R.string.author_name);
 
 		encoding = findPreference(KEY_ENCODING);
 		namingRule = findPreference(KEY_NAMING_RULE);
@@ -100,7 +95,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 				final View dialog_view = factory.inflate(R.layout.naming_rule_dialog,null);
 				final EditText editText;
 				final TextView previewTextView;
-				previewTextView = (TextView) dialog_view.findViewById(R.id.tv_preivew_string);
+				previewTextView = (TextView) dialog_view.findViewById(R.id.tv_preview_string);
 				editText =  (EditText) dialog_view.findViewById(R.id.et_naming_rule);
 				editText.addTextChangedListener(new TextWatcher() {
 					@Override
@@ -359,7 +354,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements
 			AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
 			dialog.setCancelable(false);
 
-			if (NovelUtils.versionCompare(currentVersion, versionPair.first) == 0) {
+			if (NovelUtils.versionCompare(currentVersion, versionPair.first) >= 0) {
 				dialog.setMessage(R.string.current_is_latest);
 				dialog.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
 					@Override

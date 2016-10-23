@@ -39,7 +39,7 @@ dependencies {
     compile 'com.github.dmytrodanylyk.android-process-button:library:1.0.4'
     compile 'org.jsoup:jsoup:1.9.2'
     compile 'com.nononsenseapps:filepicker:2.5.2'
-    compile 'com.github.medyo:android-about-page:1.0.7'
+    compile 'com.github.medyo:android-about-page:1.1.1'
 }
 
 def ksFile = rootProject.file('local.properties')
