@@ -1,6 +1,12 @@
 Changelog
 ======
 
+## 1.5.1
+* Supported fully-customizable fortmat for output file (thanks to @npes87184)
+* Embed static serach.html in assests
+* Tweaked several UI layouts
+* Fixed version check of upgrade
+
 ## 1.5.0
 * Several fixes for API changes
 * Switch the directory picker
