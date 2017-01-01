@@ -2,8 +2,8 @@ Changelog
 ======
 
 ## 1.5.1
-* Supported fully-customizable fortmat for output file (thanks to @npes87184)
-* Embed static serach.html in assests
+* Supported fully-customizable format for output file (thanks to [@npes87184](https://github.com/npes87184))
+* Embed static search.html in assets
 * Tweaked several UI layouts
 * Fixed version check of upgrade
 
