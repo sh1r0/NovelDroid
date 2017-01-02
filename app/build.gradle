@@ -23,10 +23,13 @@ android {
             signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            resValue "string", "app_name", "NovelDroid"
         }
 
         debug {
             applicationIdSuffix ".debug"
+            versionNameSuffix "-DEBUG"
+            resValue "string", "app_name", "NovelDroid - debug"
         }
     }
 }

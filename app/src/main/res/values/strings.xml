@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">NovelDroid</string>
     <string name="author_name">sh1r0</string>
     <string name="success">Success</string>
     <string name="done">Done</string>
