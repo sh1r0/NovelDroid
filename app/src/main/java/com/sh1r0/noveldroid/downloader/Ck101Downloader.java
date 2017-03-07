@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 
 public class Ck101Downloader extends AbstractDownloader {
 	private static final int SITE_ID = 0;
-	private static final String THREAD_PREFIX = "http://ck101.com/thread-";
+	private static final String THREAD_PREFIX = "https://ck101.com/thread-";
 	private static Ck101Downloader downloader;
 
 	private Novel novel;
