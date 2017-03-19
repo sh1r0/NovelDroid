@@ -1,6 +1,9 @@
 Changelog
 ======
 
+## 1.5.2
+* Fixed parsing error of cklol (thanks to [@npes87184](https://github.com/npes87184))
+
 ## 1.5.1
 * Supported fully-customizable format for output file (thanks to [@npes87184](https://github.com/npes87184))
 * Embed static search.html in assets
