@@ -16,7 +16,7 @@ import java.util.zip.ZipFile;
 
 public class NovelUtils {
 	public static final String DEFAULT_NAMING_RULE = "/n";
-	public static final int MAX_THREAD_NUM = 4;
+	public static final int MAX_THREAD_NUM = 2;
 	public static final String APP_DIR = Environment.getExternalStorageDirectory().getAbsolutePath() + "/NovelDroid/";
 	public static final String TEMP_DIR = APP_DIR + "temp/";
 	private static NovelUtils novelUtils;
